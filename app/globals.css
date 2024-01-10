@@ -1,3 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "NanumSquareRoundOTFL";
+  src: url("../public/font/NanumSquareRoundOTFL.otf");
+}
+@font-face {
+  font-family: "NanumSquareRoundOTFR";
+  src: url("../public/font/NanumSquareRoundOTFR.otf");
+}
+@font-face {
+  font-family: "NanumSquareRoundOTFB";
+  src: url("../public/font/NanumSquareRoundOTFB.otf");
+}
+@font-face {
+  font-family: "NanumSquareRoundOTEB";
+  src: url("../public/font/NanumSquareRoundOTFEB.otf");
+}
+
+:root {
+  --primaryGray: #494949;
+  --boxGray: #dadada;
+  --textGray: #8b8b8b;
+  --orange: #ff7c33;
+  --red: #ff3d3d;
+  --blue: #4759ff;
+  --green: #41b468;
+}
+
+body {
+  font-family: "NanumSquareRoundOTFL";
+}

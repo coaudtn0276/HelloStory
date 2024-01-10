@@ -6,7 +6,7 @@ export default async function Home() {
   const chat = await db.collection("chat").find().toArray();
   const pet = await db.collection("pet").find().toArray();
   const restaurant = await db.collection("restaurant").find().toArray();
-  console.log(game[0].title);
+  // console.log(game[0].title);
 
-  return <div>메인페이지</div>;
+  return <div className="font-eb text-gray-primary">메인페이지</div>;
 }
