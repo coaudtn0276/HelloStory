@@ -12,12 +12,13 @@ const config: Config = {
         r: ["NanumSquareRoundOTFR"],
         b: ["NanumSquareRoundOTFB"],
         eb: ["NanumSquareRoundOTEB"],
+        nico: ["NicoMoji-Regular"],
       },
       colors: {
         gray: {
           primary: "var(--primaryGray)",
           box: "var(--boxGray)",
-          text: "var(--textGray)",
+          boxText: "var(--textGray)",
         },
         orange: "var(--orange)",
         red: "var(--red)",

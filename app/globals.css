@@ -18,6 +18,10 @@
   font-family: "NanumSquareRoundOTEB";
   src: url("../public/font/NanumSquareRoundOTFEB.otf");
 }
+@font-face {
+  font-family: "NicoMoji-Regular";
+  src: url("../public/font/NicoMoji-Regular.ttf");
+}
 
 :root {
   --primaryGray: #494949;
