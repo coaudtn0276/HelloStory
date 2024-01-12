@@ -15,7 +15,7 @@ const NavBar: React.FC = () => {
 
   return (
     <div className="flex flex-col border-2 border-red">
-      <div className="flex flex-row-reverse pt-2 mr-2 font-b text-sm">
+      <div className="flex flex-row-reverse pt-2 mr-2 font-b text-xs sm:text-sm md:text-base lg:text-lg ">
         <div>
           <span className="mr-4 text-orange">로그인</span>
           회원가입
@@ -24,7 +24,7 @@ const NavBar: React.FC = () => {
       <div className="flex items-center mb-2">
         <Link
           href={"/"}
-          className="font-nico mx-2 text-2xl"
+          className="font-nico mx-2 text-sm sm:text-base md:text-xl lg:text-2xl"
           onClick={() => {
             handleActiveClick("/");
           }}
@@ -38,7 +38,7 @@ const NavBar: React.FC = () => {
             tory
           </p>
         </Link>
-        <div className="flex justify-evenly w-1/2 font-b text-sm">
+        <div className="flex justify-evenly w-1/2 font-b text-xs sm:text-sm md:text-base lg:text-lg">
           <Link
             href={"/"}
             className={`${activeLink === "/" && "text-orange"}`}
@@ -87,19 +87,24 @@ const NavBar: React.FC = () => {
         </div>
       </div>
       <div className="flex justify-between">
-        <Button bg="bg-orange" px="px-5" py="py-2" textSize="text-xs" textColor="text-white">
-          <span className="flex items-center">
-            <Image src={postImg} alt="postImg" className="w-4 h-4 mr-2" />새 글 게시
+        <div className="flex ">
+          <span className="mr-2">
+            <Button bg="bg-orange" px="px-4" textSize="text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs" textColor="text-white">
+              <span className="flex items-center">
+                <Image src={postImg} alt="postImg" className="w-2 sm:w-2 md:w-3 lg:w-4 h-2 sm:h-2 md:h-3 lg:h-4 mr-2" />새 글 게시
+              </span>
+            </Button>
           </span>
-        </Button>
 
-        <Button bg="bg-gray-primary" px="px-5" py="py-2" textSize="text-xs" textColor="text-white">
-          내가 쓴 글 보기
-        </Button>
-        <form action="submit" className="flex justify-between items-center w-96 h-8 px-2 border-2 border-gray-primary rounded-md">
-          <input type="text" className="font-b w-2/3 text-xs placeholder-[#d6d6d6] " placeholder="궁금한 이야기를 검색해보세요." />
+          <Button bg="bg-gray-primary" px="px-4" textSize="text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs" textColor="text-white">
+            내가 쓴 글 보기
+          </Button>
+        </div>
+
+        <form action="submit" className="flex justify-between items-center w-7/12 h-8 px-2 border-2 border-gray-primary rounded-md">
+          <input type="text" className="font-b w-full outline-none text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs placeholder-[#d6d6d6] " placeholder="궁금한 이야기를 검색해보세요." />
           <button type="submit">
-            <Image src={searchImg} alt="searchImg" className="w-5 h-5" />
+            <Image src={searchImg} alt="searchImg" className="w-3 sm:w-4 md:w-5 lg:w-4 h-3 sm:h-4 md:h-5" />
           </button>
         </form>
       </div>

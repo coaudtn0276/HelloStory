@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko" className="flex justify-center">
-      <body className="w-8/12">
+      <body className="w-8/12 min-w-[400px]">
         <NavBar />
         {children}
       </body>

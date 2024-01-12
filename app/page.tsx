@@ -1,3 +1,5 @@
+import CarouselItems from "@/components/CarouselItems";
+import CarouselItemsSlick from "@/components/CarouselItemsSlick";
 import { connectDB } from "@/src/util/database";
 
 export default async function Home() {
@@ -5,5 +7,11 @@ export default async function Home() {
   const result = await db.collection("post").find({ type: "chat" }).toArray();
   // console.log(result);
 
-  return <div className="text-gray-primary">메인페이지</div>;
+  return (
+    <div className="text-gray-primary  ">
+      <CarouselItemsSlick />
+      {/* <CarouselItems /> */}
+      {/* 메인페이지 */}
+    </div>
+  );
 }
