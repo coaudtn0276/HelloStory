@@ -5,6 +5,8 @@ import "slick-carousel/slick/slick-theme.css";
 
 import Slider from "react-slick";
 import { ArrowPropsTyps } from "@/src/type/types";
+import { testImg1, testImg2, testImg3, testImg4, testImg5 } from "@/public/testImg";
+import LeftArrow from "@/public/image/LeftArrow";
 
 function SampleNextArrow(props: ArrowPropsTyps) {
   const { className, style, onClick } = props;
@@ -13,8 +15,16 @@ function SampleNextArrow(props: ArrowPropsTyps) {
 
 function SamplePrevArrow(props: ArrowPropsTyps) {
   const { className, style, onClick } = props;
-  return <div className={className} style={{ ...style, display: "block", background: "green" }} onClick={onClick} />;
+  return (
+    <div className={className} style={{ ...style, display: "block" }} onClick={onClick}>
+      <LeftArrow />
+    </div>
+  );
 }
+
+// const StyledSlider = ()=>{
+//   return <div className='w-full h-full relative' style={{}}></div>
+// }
 
 const CarouselItemsSlick: React.FC = () => {
   const settings = {
@@ -25,7 +35,11 @@ const CarouselItemsSlick: React.FC = () => {
     slidesToScroll: 1,
     // className: "slide",
     nextArrow: <SampleNextArrow />,
-    prevArrow: <SamplePrevArrow />,
+    prevArrow: (
+      <div className="w-6 h-11 absolute left-0 bottom-30">
+        <LeftArrow />
+      </div>
+    ),
     responsive: [
       {
         breakpoint: 1024,
@@ -55,28 +69,18 @@ const CarouselItemsSlick: React.FC = () => {
     ],
   };
 
+  const testImgs = [testImg1, testImg2, testImg3, testImg4, testImg5];
+
   return (
-    <div className="border-2">
-      <h2> Single Item</h2>
+    <div className="w-10/12">
       <Slider {...settings}>
-        <div className="h-28 bg-red">
-          <h3>1</h3>
-        </div>
-        <div className="h-28 bg-green">
-          <h3>2</h3>
-        </div>
-        <div className="h-28 bg-blue">
-          <h3>3</h3>
-        </div>
-        <div className="h-28 bg-red">
-          <h3>4</h3>
-        </div>
-        <div className="h-28 bg-green">
-          <h3>5</h3>
-        </div>
-        <div className="h-28 bg-blue">
-          <h3>6</h3>
-        </div>
+        {testImgs.map((el, idx) => {
+          return (
+            <div key={idx} className="w-28 h-28 ">
+              <img src={el.src} className="w-full h-full object-cover" />
+            </div>
+          );
+        })}
       </Slider>
     </div>
   );

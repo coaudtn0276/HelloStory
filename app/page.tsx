@@ -1,5 +1,5 @@
-import CarouselItems from "@/components/CarouselItems";
 import CarouselItemsSlick from "@/components/CarouselItemsSlick";
+import HotGallery from "@/components/HotGallery";
 import { connectDB } from "@/src/util/database";
 
 export default async function Home() {
@@ -9,8 +9,8 @@ export default async function Home() {
 
   return (
     <div className="text-gray-primary  ">
-      <CarouselItemsSlick />
-      {/* <CarouselItems /> */}
+      <HotGallery />
+      {/* <CarouselItemsSlick /> */}
       {/* 메인페이지 */}
     </div>
   );
