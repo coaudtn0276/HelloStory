@@ -14,7 +14,7 @@ const NavBar: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col border-2 border-red">
+    <div className="flex flex-col">
       <div className="flex flex-row-reverse pt-2 mr-2 font-b text-xs sm:text-sm md:text-base lg:text-lg ">
         <div>
           <span className="mr-4 text-orange">로그인</span>

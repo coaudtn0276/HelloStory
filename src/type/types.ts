@@ -13,3 +13,7 @@ export type ArrowPropsTyps = {
   style?: React.CSSProperties;
   onClick?: () => void;
 };
+
+export type ArrowType = {
+  color: string;
+};

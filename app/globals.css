@@ -47,3 +47,12 @@ body {
   padding-right: 10px;
   padding-left: 10px;
 }
+
+/* .slick-prev::before,
+.slick-next::before {
+  opacity: 0;
+  display: none;
+}
+.slick-slide div {
+  cursor: pointer;
+} */

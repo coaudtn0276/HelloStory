@@ -3,42 +3,78 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-import Slider from "react-slick";
-import { ArrowPropsTyps } from "@/src/type/types";
+import styled from "styled-components";
+
 import { testImg1, testImg2, testImg3, testImg4, testImg5 } from "@/public/testImg";
+
+import Slider from "react-slick";
 import LeftArrow from "@/public/image/LeftArrow";
+import { RightArrow } from "@/public/image";
+import { useState } from "react";
 
-function SampleNextArrow(props: ArrowPropsTyps) {
-  const { className, style, onClick } = props;
-  return <div className={className} style={{ ...style, display: "block", background: "red" }} onClick={onClick} />;
-}
+const StyledSlider = styled(Slider)`
+  width: 100%;
+  height: 100%;
+  position: relative;
+  .slick-prev::before,
+  .slick-next::before {
+    opacity: 0;
+    display: none;
+  }
+`;
 
-function SamplePrevArrow(props: ArrowPropsTyps) {
-  const { className, style, onClick } = props;
-  return (
-    <div className={className} style={{ ...style, display: "block" }} onClick={onClick}>
-      <LeftArrow />
-    </div>
-  );
-}
+const Pre = styled.div`
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: -7%;
+  z-index: 3;
+`;
 
-// const StyledSlider = ()=>{
-//   return <div className='w-full h-full relative' style={{}}></div>
-// }
+const NextTo = styled.div`
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  right: -11%;
+  z-index: 3;
+`;
 
 const CarouselItemsSlick: React.FC = () => {
+  const [arrowColor, setArrowColor] = useState("");
+
+  const handleArrowColor = (path: "right" | "left") => {
+    setArrowColor(path);
+  };
+
   const settings = {
     dots: true,
     infinite: false,
     speed: 500,
     slidesToShow: 5,
     slidesToScroll: 1,
-    // className: "slide",
-    nextArrow: <SampleNextArrow />,
+    nextArrow: (
+      <NextTo>
+        <div
+          className="scale-50 sm:scale-50 md:scale-75 lg:scale-90"
+          onClick={() => {
+            handleArrowColor("right");
+          }}
+        >
+          <RightArrow color={arrowColor === "right" ? "#ff7c33" : "#BDBDBD"} />
+        </div>
+      </NextTo>
+    ),
     prevArrow: (
-      <div className="w-6 h-11 absolute left-0 bottom-30">
-        <LeftArrow />
-      </div>
+      <Pre>
+        <div
+          className="scale-50 sm:scale-50 md:scale-75 lg:scale-90"
+          onClick={() => {
+            handleArrowColor("left");
+          }}
+        >
+          <LeftArrow color={arrowColor === "left" ? "#ff7c33" : "#BDBDBD"} />
+        </div>
+      </Pre>
     ),
     responsive: [
       {
@@ -73,7 +109,7 @@ const CarouselItemsSlick: React.FC = () => {
 
   return (
     <div className="w-10/12">
-      <Slider {...settings}>
+      <StyledSlider {...settings}>
         {testImgs.map((el, idx) => {
           return (
             <div key={idx} className="w-28 h-28 ">
@@ -81,7 +117,7 @@ const CarouselItemsSlick: React.FC = () => {
             </div>
           );
         })}
-      </Slider>
+      </StyledSlider>
     </div>
   );
 };
