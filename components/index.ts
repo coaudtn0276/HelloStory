@@ -4,3 +4,4 @@ export { default as CarouselItems } from "./CarouselItems";
 export { default as CarouselItemsSlick } from "./CarouselItemsSlick";
 export { default as HotGallery } from "./HotGallery";
 export { default as HotStory } from "./HotStory";
+export { default as Pagination } from "./Pagination";
