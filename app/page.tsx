@@ -5,7 +5,12 @@ import { connectDB } from "@/src/util/database";
 export default async function Home() {
   const db = (await connectDB).db("hellostory");
   // data props로 내려줄때 각 컴포넌트에 맞는 데이터 filter해서 내려주기
-  const data = await db.collection<PostDocument>("post").find().toArray();
+  let data = await db.collection<PostDocument>("post").find().toArray();
+
+  data = JSON.parse(JSON.stringify(data));
+
+  // console.log("result", result);
+  // console.log("data", data);
 
   return (
     <div>

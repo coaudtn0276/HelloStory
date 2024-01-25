@@ -19,9 +19,11 @@ const Pagination: React.FC<PaginationProps> = ({ totalPosts, postsPerPage, curre
 
   const totalPage = Math.ceil(totalPosts / postsPerPage);
 
-  const handleArrowColor = (path: "right" | "left") => {
+  const handleArrowColor = (path: "right" | "left" | "") => {
     setArrowColor(path);
   };
+
+  // console.log(arrowColor);
 
   return (
     <div className="flex justify-center">
@@ -30,16 +32,12 @@ const Pagination: React.FC<PaginationProps> = ({ totalPosts, postsPerPage, curre
         onClick={() => {
           if (currentPage !== 1) {
             handler?.(currentPage - 1);
+            handleArrowColor("left");
           }
         }}
         className="text-[#9FA0A6] hover:text-[#191919] mr-5"
       >
-        <div
-          className="scale-50 sm:scale-50 md:scale-75 lg:scale-90"
-          onClick={() => {
-            handleArrowColor("left");
-          }}
-        >
+        <div className="rotate-180 scale-50 sm:scale-50 md:scale-75 lg:scale-90">
           <LeftArrowIcon color={arrowColor === "left" ? "#ff7c33" : "#BDBDBD"} />
         </div>
       </button>
@@ -57,16 +55,12 @@ const Pagination: React.FC<PaginationProps> = ({ totalPosts, postsPerPage, curre
         onClick={() => {
           if (currentPage !== totalPage) {
             handler?.(currentPage + 1);
+            handleArrowColor("right");
           }
         }}
         className="text-[#9FA0A6] hover:text-[#191919] "
       >
-        <div
-          className="scale-50 sm:scale-50 md:scale-75 lg:scale-90"
-          onClick={() => {
-            handleArrowColor("right");
-          }}
-        >
+        <div className="scale-50 sm:scale-50 md:scale-75 lg:scale-90">
           <RightArrowIcon color={arrowColor === "right" ? "#ff7c33" : "#BDBDBD"} />
         </div>
       </button>

@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Pagination } from ".";
 
 const HotStory: React.FC<HotStoryProps> = ({ data, containerTitle }) => {
-  // console.log(data);
+  // console.log(testdata);
   // 전체 data중에서 조회수 높은 순으로 정렬
 
   // const date = new Date();
@@ -24,7 +24,7 @@ const HotStory: React.FC<HotStoryProps> = ({ data, containerTitle }) => {
       <div key={idx} className="flex justify-between py-[2px] font-l text-center border-b-[1px] border-b-[#bdbdbd]">
         <p style={{ flex: 1 }}>{idx + 1}</p>
         <p style={{ flex: 1 }}>{switchCategory(el.category)}</p>
-        <p style={{ flex: 2 }} className="flex items-center text-left">
+        <p style={{ flex: 3 }} className="flex items-center text-left">
           {el.title}
           {el.imgUrl !== "" && <Image src={photoIcon} alt="사진 아이콘" className="ml-2 w-2 sm:w-2 md:w-3 lg:w-4 h-2 sm:h-2 md:h-3 lg:h-4" />}
         </p>
@@ -50,7 +50,7 @@ const HotStory: React.FC<HotStoryProps> = ({ data, containerTitle }) => {
         <div className="flex justify-between py-[2px] border-b-2 border-b-gray-boxText font-b text-center">
           <p style={{ flex: 1 }}>번호</p>
           <p style={{ flex: 1 }}>카테고리</p>
-          <p style={{ flex: 2 }}>제목</p>
+          <p style={{ flex: 3 }}>제목</p>
           <p style={{ flex: 1 }}>게시일</p>
           <p style={{ flex: 1 }}>글쓴이</p>
           <p style={{ flex: 1 }}>조회수</p>

@@ -8,7 +8,7 @@ const CarouselItems: React.FC = () => {
   const [numOfCards, setNumOfCards] = useState(4);
   const [gutter, setGutter] = useState(20);
 
-  console.log(activeItemIndex);
+  // console.log(activeItemIndex);
 
   return (
     <div className="w-full px-20">
