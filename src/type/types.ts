@@ -40,3 +40,7 @@ export type PageListProps = {
   data: PostDocument[];
   containerTitle: string;
 };
+
+export type DropDownProps = {
+  dropDownList?: string[];
+};

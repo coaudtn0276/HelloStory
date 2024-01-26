@@ -4,20 +4,33 @@ import { menuIcon, photoIcon, searchImg } from "@/public/image";
 import { PageListProps } from "@/src/type/types";
 import { testdata } from "@/testdata";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown, Pagination } from ".";
 
 const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
   // 전체 data중에서 최신 등록 순으로 정렬
   const [inputValue, setInputValue] = useState("");
-
-  console.log(inputValue);
+  const [dataToUse, setDataUse] = useState(testdata);
+  const [riseFallValue, setRiseFallValue] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 15;
   const offset = (currentPage - 1) * postsPerPage;
 
-  const totalPosts = testdata.slice(offset, offset + postsPerPage).map((el, idx) => {
+  const handleClickRiseFall = () => {
+    setRiseFallValue(!riseFallValue);
+  };
+
+  useEffect(() => {
+    if (riseFallValue) {
+      const riseFallData = [...testdata].sort((a, b) => b.views - a.views);
+      setDataUse(riseFallData);
+    } else {
+      setDataUse(testdata);
+    }
+  }, [riseFallValue]);
+
+  const totalPosts = dataToUse.slice(offset, offset + postsPerPage).map((el, idx) => {
     return (
       <div key={idx} className="flex justify-between py-[2px] font-l text-center border-b-[1px] border-b-[#bdbdbd]">
         <p style={{ flex: 1 }}>{idx + 1}</p>
@@ -43,7 +56,7 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
           <span className="text-orange">{containerTitle} </span>
           story
         </h2>
-        <div className="flex items-center">
+        <div className="flex items-center cursor-pointer" onClick={handleClickRiseFall}>
           <button>
             <Image src={menuIcon} alt="메뉴 아이콘" className="ml-3 w-3 sm:w-3 md:w-4 lg:w-5 h-3 sm:h-2 md:h-4 lg:h-5 mr-2" />
           </button>

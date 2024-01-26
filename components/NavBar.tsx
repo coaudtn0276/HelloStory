@@ -88,13 +88,13 @@ const NavBar: React.FC = () => {
       </div>
       <div className="flex justify-between">
         <div className="flex ">
-          <span className="mr-2">
+          <Link href={"/write"} className="mr-2">
             <Button bg="bg-orange" px="px-4" textSize="text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs" textColor="text-white">
               <span className="flex items-center">
                 <Image src={postImg} alt="postImg" className="w-2 sm:w-2 md:w-3 lg:w-4 h-2 sm:h-2 md:h-3 lg:h-4 mr-2" />새 글 게시
               </span>
             </Button>
-          </span>
+          </Link>
 
           <Button bg="bg-gray-primary" px="px-4" textSize="text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs" textColor="text-white">
             내가 쓴 글 보기

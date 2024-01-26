@@ -1,11 +1,12 @@
 "use client";
 
 import { BottomArrowIcon } from "@/public/image";
+import { DropDownProps } from "@/src/type/types";
 import { useState } from "react";
 
-const Dropdown = () => {
+const Dropdown: React.FC<DropDownProps> = ({ dropDownList }) => {
   const [clickDropdown, setClickDropdown] = useState(false);
-  const [dropdownValue, setDropdownValue] = useState("제목 + 내용");
+  const [dropdownValue, setDropdownValue] = useState(dropDownList ? dropDownList[0] : "제목 + 내용");
 
   const handleClickDropdown = () => {
     setClickDropdown(!clickDropdown);
@@ -13,7 +14,7 @@ const Dropdown = () => {
 
   return (
     <div className="min-w-[101px] sm:min-w-[101px] md:min-w-[111px] lg:min-w-[120px]">
-      <button className={`relative flex justify-between items-center bg-gray-primary text-white text-xs sm:text-xs md:text-sm lg:text-base font-b py-1 px-3 min-w-[101px] sm:min-w-[101px] md:min-w-[111px] lg:min-w-[120px] ${clickDropdown ? "rounded-t-lg" : "rounded-lg"}`} onClick={handleClickDropdown}>
+      <button className={`relative flex justify-between items-center bg-gray-primary text-white ${dropDownList ? "text-[10px] sm:text-[12px] md:text-xs lg:text-sm" : "text-xs sm:text-xs md:text-sm lg:text-base"}  font-b py-1 px-3 min-w-[101px] sm:min-w-[101px] md:min-w-[111px] lg:min-w-[120px] ${clickDropdown ? "rounded-t-lg" : "rounded-lg"}`} onClick={handleClickDropdown}>
         {dropdownValue}
         <span className="rotate-90 ml-2 scale-50 sm:scale-50 md:scale-75 lg:scale-90">
           <BottomArrowIcon />
@@ -23,38 +24,46 @@ const Dropdown = () => {
           <p
             className="hover:underline"
             onClick={() => {
-              setDropdownValue("제목 + 내용");
+              {
+                dropDownList ? setDropdownValue(dropDownList[0]) : setDropdownValue("제목 + 내용");
+              }
               setClickDropdown(false);
             }}
           >
-            제목 + 내용
+            {dropDownList ? dropDownList[0] : "제목 + 내용"}
           </p>
           <p
             className="hover:underline"
             onClick={() => {
-              setDropdownValue("제목");
+              {
+                dropDownList ? setDropdownValue(dropDownList[1]) : setDropdownValue("제목");
+              }
               setClickDropdown(false);
             }}
           >
-            제목
+            {dropDownList ? dropDownList[1] : "제목"}
           </p>
           <p
             className="hover:underline"
             onClick={() => {
-              setDropdownValue("내용");
+              {
+                dropDownList ? setDropdownValue(dropDownList[2]) : setDropdownValue("내용");
+              }
               setClickDropdown(false);
             }}
           >
-            내용
+            {dropDownList ? dropDownList[2] : "내용"}
           </p>
           <p
             className="hover:underline"
             onClick={() => {
-              setDropdownValue("글쓴이");
+              {
+                dropDownList ? setDropdownValue(dropDownList[3]) : setDropdownValue("글쓴이");
+              }
               setClickDropdown(false);
             }}
           >
-            글쓴이
+            {dropDownList ? dropDownList[3] : "글쓴이"}
           </p>
         </div>
       </button>
@@ -62,6 +71,7 @@ const Dropdown = () => {
   );
 };
 
+// text-xs sm:text-xs md:text-xs lg:text-sm
 // min-w-[101px] sm:min-w-[101px] md:min-w-[111px] lg:min-w-[120px]
 // w-24 sm:w-24 md:w-28 lg:w-28 h-7
 // px-3 py-1
