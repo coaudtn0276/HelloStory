@@ -20,7 +20,7 @@ const Dropdown: React.FC<DropDownProps> = ({ dropDownList }) => {
           <BottomArrowIcon />
         </span>
 
-        <div className={`absolute top-6 left-0 min-w-[102px] sm:min-w-[102px] md:min-w-[111px] lg:min-w-[121px] flex flex-col font-b pl-2 py-2 text-black text-left border-x-2 border-b-2 border-gray-primary rounded-b-md cursor-pointer ${!clickDropdown ? "hidden" : ""}`}>
+        <div className={`absolute top-6 left-0 min-w-[102px] sm:min-w-[102px] md:min-w-[111px] lg:min-w-[121px] flex flex-col font-b pl-2 py-2 text-black text-left border-x-2 border-b-2 border-gray-primary rounded-b-md cursor-pointer bg-white ${!clickDropdown ? "hidden" : ""}`}>
           <p
             className="hover:underline"
             onClick={() => {

@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { NextApiRequest, NextApiResponse } from "next";
 
 export type ButtonType = {
   children: React.ReactNode;
@@ -20,8 +21,7 @@ export type ArrowType = {
   color: string;
 };
 
-export type PostDocument = {
-  _id: ObjectId;
+export type DataType = {
   title: string;
   content: string;
   category: string;
@@ -29,6 +29,10 @@ export type PostDocument = {
   imgUrl: string;
   modificationDate: string;
   views: number;
+};
+
+export type PostDocument = DataType & {
+  _id: ObjectId;
 };
 
 export type HotStoryProps = {
@@ -44,3 +48,5 @@ export type PageListProps = {
 export type DropDownProps = {
   dropDownList?: string[];
 };
+
+export type ServerPropsType = Parameters<(req: NextApiRequest, res: NextApiResponse) => void>;
