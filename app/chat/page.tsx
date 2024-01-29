@@ -4,7 +4,7 @@ import { connectDB } from "@/src/util/database";
 
 const Chat = async () => {
   const db = (await connectDB).db("hellostory");
-  let data = await db.collection<PostDocument>("post").find({ category: "chat" }).toArray();
+  let data = await db.collection<PostDocument>("post").find({ category: "chat" }).sort({ _id: -1 }).toArray();
 
   data = JSON.parse(JSON.stringify(data));
 

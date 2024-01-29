@@ -4,12 +4,23 @@ import { BottomArrowIcon } from "@/public/image";
 import { DropDownProps } from "@/src/type/types";
 import { useState } from "react";
 
-const Dropdown: React.FC<DropDownProps> = ({ dropDownList }) => {
+const Dropdown: React.FC<DropDownProps> = ({ dropDownList, onValueChange }) => {
   const [clickDropdown, setClickDropdown] = useState(false);
   const [dropdownValue, setDropdownValue] = useState(dropDownList ? dropDownList[0] : "제목 + 내용");
 
   const handleClickDropdown = () => {
     setClickDropdown(!clickDropdown);
+  };
+
+  const handleChange = (idx: number, path: string) => {
+    if (dropDownList) {
+      setDropdownValue(dropDownList[idx]);
+      onValueChange(dropDownList[idx]);
+    } else {
+      setDropdownValue(path);
+      onValueChange(path);
+    }
+    setClickDropdown(false);
   };
 
   return (
@@ -24,10 +35,7 @@ const Dropdown: React.FC<DropDownProps> = ({ dropDownList }) => {
           <p
             className="hover:underline"
             onClick={() => {
-              {
-                dropDownList ? setDropdownValue(dropDownList[0]) : setDropdownValue("제목 + 내용");
-              }
-              setClickDropdown(false);
+              handleChange(0, "제목 + 내용");
             }}
           >
             {dropDownList ? dropDownList[0] : "제목 + 내용"}
@@ -35,10 +43,7 @@ const Dropdown: React.FC<DropDownProps> = ({ dropDownList }) => {
           <p
             className="hover:underline"
             onClick={() => {
-              {
-                dropDownList ? setDropdownValue(dropDownList[1]) : setDropdownValue("제목");
-              }
-              setClickDropdown(false);
+              handleChange(1, "제목");
             }}
           >
             {dropDownList ? dropDownList[1] : "제목"}
@@ -46,10 +51,7 @@ const Dropdown: React.FC<DropDownProps> = ({ dropDownList }) => {
           <p
             className="hover:underline"
             onClick={() => {
-              {
-                dropDownList ? setDropdownValue(dropDownList[2]) : setDropdownValue("내용");
-              }
-              setClickDropdown(false);
+              handleChange(2, "내용");
             }}
           >
             {dropDownList ? dropDownList[2] : "내용"}
@@ -57,10 +59,7 @@ const Dropdown: React.FC<DropDownProps> = ({ dropDownList }) => {
           <p
             className="hover:underline"
             onClick={() => {
-              {
-                dropDownList ? setDropdownValue(dropDownList[3]) : setDropdownValue("글쓴이");
-              }
-              setClickDropdown(false);
+              handleChange(3, "글쓴이");
             }}
           >
             {dropDownList ? dropDownList[3] : "글쓴이"}

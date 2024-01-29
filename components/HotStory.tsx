@@ -12,9 +12,6 @@ const HotStory: React.FC<HotStoryProps> = ({ data, containerTitle }) => {
   // console.log(testdata);
   // 전체 data중에서 조회수 높은 순으로 정렬
 
-  // const date = new Date();
-  // console.log(date.toLocaleString("ko-kr"));
-
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 5;
   const offset = (currentPage - 1) * postsPerPage;

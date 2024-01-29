@@ -12,6 +12,7 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
   const [inputValue, setInputValue] = useState("");
   const [dataToUse, setDataUse] = useState(testdata);
   const [riseFallValue, setRiseFallValue] = useState(false);
+  const [dropDownValue, setDropDownValue] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 15;
@@ -81,7 +82,7 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
         </span>
         <span className="flex justify-center items-center">
           <span className="mr-2">
-            <Dropdown />
+            <Dropdown onValueChange={setDropDownValue} />
           </span>
           <div className="flex justify-between items-center w-7/12  h-6 md:h-7 lg:h-8 px-2 border-2 border-gray-primary rounded-md">
             <input

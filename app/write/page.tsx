@@ -2,14 +2,17 @@
 
 import { Button, Dropdown } from "@/components";
 import { DataType } from "@/src/type/types";
+import { switchPostCategory } from "@/src/util/function";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const Write = () => {
   const [previewImage, setPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
+  const [dropDownValue, setDropDownValue] = useState("게임");
+  // console.log(dropDownValue);
   const [postData, setPostDate] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
-  console.log(postData.title);
+  console.log(postData);
 
   const dropDownList = ["게임", "맛집", "반려동물", "잡담"];
   const contentEditableRef = useRef<HTMLDivElement>(null);
@@ -19,18 +22,33 @@ const Write = () => {
   const postApi = async () => {
     try {
       const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(postData) });
-      console.log(response);
+      if (response.status === 500) {
+        const errorMessage = await response.json();
+        console.log(errorMessage);
+        if (postData.title === "") {
+          return alert("제목을 입력해 주세요");
+        }
+        if (postData.content === "") {
+          return alert("내용을 입력해 주세요");
+        }
+      }
+      if (response.status === 200) {
+        const success = await response.json();
+        const switchCategory = switchPostCategory(dropDownValue);
+        console.log(success);
+        router.push(`/${switchCategory}`);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
   // content에 사용자가 작성한 내용이 어떤태그들이 들어오는지 테스트 버튼
-  const handleClick = () => {
-    if (contentEditableRef.current !== null) {
-      console.log(contentEditableRef.current.innerHTML);
-    }
-  };
+  // const handleClick = () => {
+  //   if (contentEditableRef.current !== null) {
+  //     console.log(contentEditableRef.current.innerHTML);
+  //   }
+  // };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
@@ -45,11 +63,22 @@ const Write = () => {
     router.back();
   };
 
+  const handleDropDownChange = (value: string) => {
+    const switchCategory = switchPostCategory(value);
+    if (switchCategory !== undefined) {
+      setPostDate((prevPostData) => ({ ...prevPostData, category: switchCategory }));
+    }
+  };
+
+  useEffect(() => {
+    handleDropDownChange(dropDownValue);
+  }, [dropDownValue]);
+
   return (
     <div className="flex flex-col font-b text-xs sm:text-sm md:text-base lg:text-lg">
       <div className="flex items-center my-4">
         <p className="text-orange mr-2">카테고리</p>
-        <Dropdown dropDownList={dropDownList} />
+        <Dropdown dropDownList={dropDownList} onValueChange={setDropDownValue} />
       </div>
       <div className="mb-4">
         <p>제목</p>
@@ -59,13 +88,22 @@ const Write = () => {
           placeholder="제목을 입력해 주세요."
           value={postData.title}
           onChange={(e) => {
-            setPostDate({ ...postData, title: e.target.value });
+            setPostDate((prevPostData) => ({ ...prevPostData, title: e.target.value }));
           }}
         />
       </div>
       <div className="mb-2">
         <p>내용</p>
-        <div ref={contentEditableRef} contentEditable="true" className="text-xs w-full h-96 border-2 rounded-lg p-2 border-gray-primary">
+        <div
+          ref={contentEditableRef}
+          contentEditable="true"
+          className="text-xs w-full h-96 border-2 rounded-lg p-2 border-gray-primary"
+          onInput={(e) => {
+            // console.log(e.currentTarget);
+            setPostDate({ ...postData, content: e.currentTarget.innerHTML });
+          }}
+        >
+          <br />
           {previewImage && (
             <p className="w-36">
               <img src={previewImage} alt="previewImage" className="object-cover" />
@@ -73,7 +111,7 @@ const Write = () => {
           )}
         </div>
 
-        <button onClick={handleClick}>버튼</button>
+        {/* <button onClick={handleClick}>버튼</button> */}
       </div>
       <div className="mb-4">
         <p>첨부파일</p>

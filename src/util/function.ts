@@ -10,3 +10,16 @@ export const switchCategory = (category: string) => {
       return "맛집";
   }
 };
+
+export const switchPostCategory = (category: string) => {
+  switch (category) {
+    case "게임":
+      return "game";
+    case "반려동물":
+      return "pet";
+    case "잡담":
+      return "chat";
+    case "맛집":
+      return "restaurant";
+  }
+};

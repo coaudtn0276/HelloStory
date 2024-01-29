@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
+import { Dispatch, SetStateAction } from "react";
 
 export type ButtonType = {
   children: React.ReactNode;
@@ -47,6 +48,7 @@ export type PageListProps = {
 
 export type DropDownProps = {
   dropDownList?: string[];
+  onValueChange: Dispatch<SetStateAction<string>>;
 };
 
 export type ServerPropsType = Parameters<(req: NextApiRequest, res: NextApiResponse) => void>;
