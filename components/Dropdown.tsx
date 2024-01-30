@@ -2,9 +2,9 @@
 
 import { BottomArrowIcon } from "@/public/image";
 import { DropDownProps } from "@/src/type/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const Dropdown: React.FC<DropDownProps> = ({ dropDownList, onValueChange }) => {
+const Dropdown: React.FC<DropDownProps> = ({ dropDownList, onValueChange, putCategorey }) => {
   const [clickDropdown, setClickDropdown] = useState(false);
   const [dropdownValue, setDropdownValue] = useState(dropDownList ? dropDownList[0] : "제목 + 내용");
 
@@ -22,6 +22,12 @@ const Dropdown: React.FC<DropDownProps> = ({ dropDownList, onValueChange }) => {
     }
     setClickDropdown(false);
   };
+
+  useEffect(() => {
+    if (putCategorey) {
+      setDropdownValue(putCategorey);
+    }
+  }, [putCategorey]);
 
   return (
     <div className="min-w-[101px] sm:min-w-[101px] md:min-w-[111px] lg:min-w-[120px]">

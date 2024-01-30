@@ -1,47 +1,24 @@
 "use client";
 
 import { Button, Dropdown } from "@/components";
-import { DataType } from "@/src/type/types";
-import { switchPostCategory } from "@/src/util/function";
+import { DataType, itemIdProps } from "@/src/type/types";
+import { switchCategory, switchPostCategory } from "@/src/util/function";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-const Write = () => {
+const Edit: React.FC<itemIdProps> = ({ params }) => {
+  // console.log(params);
   const [previewImage, setPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
-  const [dropDownValue, setDropDownValue] = useState("게임");
+  const [dropDownValue, setDropDownValue] = useState("");
   // console.log(dropDownValue);
   const [postData, setPostDate] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
-  console.log(postData);
+  // console.log(postData);
 
   const dropDownList = ["게임", "맛집", "반려동물", "잡담"];
   const contentEditableRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
-
-  const postApi = async () => {
-    try {
-      const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(postData) });
-      if (response.status === 500) {
-        const errorMessage = await response.json();
-        console.log(errorMessage);
-        if (postData.title === "") {
-          return alert("제목을 입력해 주세요");
-        }
-        if (postData.content === "") {
-          return alert("내용을 입력해 주세요");
-        }
-      }
-      if (response.status === 200) {
-        const success = await response.json();
-        const switchCategory = switchPostCategory(dropDownValue);
-        console.log(success);
-        router.push(`/${switchCategory}`);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
   // content에 사용자가 작성한 내용이 어떤태그들이 들어오는지 테스트 버튼
   // const handleClick = () => {
@@ -74,11 +51,38 @@ const Write = () => {
     handleDropDownChange(dropDownValue);
   }, [dropDownValue]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/get/items?itemId=${params.itemId}`);
+        if (response.status === 500) {
+          const errorMessage = await response.json();
+          console.log(errorMessage);
+        }
+        if (response.status === 200) {
+          const data = await response.json();
+          const parseData = JSON.parse(data);
+          const switchCategorey = switchCategory(parseData.category);
+          // console.log(switchCategorey);
+
+          setPostDate(parseData);
+          if (switchCategorey !== undefined) {
+            setDropDownValue(switchCategorey);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [params.itemId]);
+
   return (
     <div className="flex flex-col font-b text-xs sm:text-sm md:text-base lg:text-lg">
       <div className="flex items-center my-4">
         <p className="text-orange mr-2">카테고리</p>
-        <Dropdown dropDownList={dropDownList} onValueChange={setDropDownValue} />
+        <Dropdown dropDownList={dropDownList} onValueChange={setDropDownValue} putCategorey={dropDownValue} />
       </div>
       <div className="mb-4">
         <p>제목</p>
@@ -103,6 +107,7 @@ const Write = () => {
             setPostDate({ ...postData, content: e.currentTarget.innerHTML });
           }}
         >
+          {postData.content && <div dangerouslySetInnerHTML={{ __html: postData.content }} />}
           <br />
           {previewImage && (
             <p className="w-36">
@@ -125,7 +130,7 @@ const Write = () => {
         </div>
       </div>
       <div className="flex flex-row-reverse">
-        <Button bg="bg-orange" px="px-6" textSize="text-xs sm:text-sm md:text-base lg:text-lg" textColor="text-white" handler={postApi}>
+        <Button bg="bg-orange" px="px-6" textSize="text-xs sm:text-sm md:text-base lg:text-lg" textColor="text-white">
           작성 완료
         </Button>
         <span className="mr-2">
@@ -140,4 +145,4 @@ const Write = () => {
 
 // 제목 placeholder css : text-[8px] sm:text-[8px] md:text-[10px] lg:text-xs
 
-export default Write;
+export default Edit;

@@ -49,6 +49,14 @@ export type PageListProps = {
 export type DropDownProps = {
   dropDownList?: string[];
   onValueChange: Dispatch<SetStateAction<string>>;
+  putCategorey?: string;
 };
 
 export type ServerPropsType = Parameters<(req: NextApiRequest, res: NextApiResponse) => void>;
+
+export type itemIdProps = {
+  params: {
+    itemId: string;
+  };
+  searchParams: string;
+};
