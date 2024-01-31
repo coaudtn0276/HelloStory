@@ -13,7 +13,7 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
   const [dropDownValue, setDropDownValue] = useState("");
   // console.log(dropDownValue);
   const [postData, setPostDate] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
-  // console.log(postData);
+  console.log(postData);
 
   const dropDownList = ["게임", "맛집", "반려동물", "잡담"];
   const contentEditableRef = useRef<HTMLDivElement>(null);
@@ -101,13 +101,13 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
         <div
           ref={contentEditableRef}
           contentEditable="true"
-          className="text-xs w-full h-96 border-2 rounded-lg p-2 border-gray-primary"
+          className="text-xs w-full h-96 border-2 rounded-lg p-4 border-gray-primary overflow-y-scroll"
           onInput={(e) => {
             // console.log(e.currentTarget);
             setPostDate({ ...postData, content: e.currentTarget.innerHTML });
           }}
         >
-          {postData.content && <div dangerouslySetInnerHTML={{ __html: postData.content }} />}
+          {/* {postData.content && <div dangerouslySetInnerHTML={{ __html: postData.content }} />} */}
           <br />
           {previewImage && (
             <p className="w-36">

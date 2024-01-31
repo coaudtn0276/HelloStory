@@ -1,18 +1,35 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
+
 import { Button, Dropdown } from "@/components";
 import { DataType } from "@/src/type/types";
 import { switchPostCategory } from "@/src/util/function";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 const Write = () => {
+  // - 정규식을 사용하여 src 속성을 찾아 새로운 이미지 URL로 교체, img태그가 있으면 교체 or 공백으로 만들어줌.
+  // - 만약 img태그가 있다면 서버에 content를 보낼 때 공백으로 변환해서 넣어주고 서버에서 s3로 받은 url을 넣어주기.
+  // let htmlString = '<p>test</p><p><img src="imgUrl"></p><p>test</p>';
+  // let newImgUrl = "newImgUrl"; // 새로운 이미지 URL
+
+  // if (htmlString.match(/<img src="[^"]*"/)) {
+  //   htmlString = htmlString.replace(/<img src="[^"]*"/g, `<img src="${newImgUrl}"`);
+  // }
+  // console.log(htmlString);
+
   const [previewImage, setPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
   const [dropDownValue, setDropDownValue] = useState("게임");
   // console.log(dropDownValue);
   const [postData, setPostDate] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
-  console.log(postData);
+  //에디터에 작성된 데이터
+  const [content, setContent] = useState("");
+  console.log(content);
 
   const dropDownList = ["게임", "맛집", "반려동물", "잡담"];
   const contentEditableRef = useRef<HTMLDivElement>(null);
@@ -21,6 +38,10 @@ const Write = () => {
 
   const postApi = async () => {
     try {
+      // 이미지 테그를 삭제하는 코드
+      // const contentWithoutImg = postData.content.replace(/<img[^>]*>/g, '');
+      // const postDataWithoutImg = { ...postData, content: contentWithoutImg };
+
       const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(postData) });
       if (response.status === 500) {
         const errorMessage = await response.json();
@@ -74,6 +95,14 @@ const Write = () => {
     handleDropDownChange(dropDownValue);
   }, [dropDownValue]);
 
+  const modules = useMemo(() => {
+    return {
+      toolbar: {
+        container: [[{ header: [1, 2, 3, false] }], ["bold", "italic", "underline", "strike"], [{ list: "ordered" }, { list: "bullet" }], [{ color: [] }], [{ align: [] }, "image"]],
+      },
+    };
+  }, []);
+
   return (
     <div className="flex flex-col font-b text-xs sm:text-sm md:text-base lg:text-lg">
       <div className="flex items-center my-4">
@@ -92,12 +121,13 @@ const Write = () => {
           }}
         />
       </div>
-      <div className="mb-2">
+      <div className="mb-16">
         <p>내용</p>
-        <div
+
+        {/* <div
           ref={contentEditableRef}
           contentEditable="true"
-          className="text-xs w-full h-96 border-2 rounded-lg p-2 border-gray-primary"
+          className="text-xs w-full h-96 border-2 rounded-lg p-4 border-gray-primary overflow-y-scroll"
           onInput={(e) => {
             // console.log(e.currentTarget);
             setPostDate({ ...postData, content: e.currentTarget.innerHTML });
@@ -109,7 +139,8 @@ const Write = () => {
               <img src={previewImage} alt="previewImage" className="object-cover" />
             </p>
           )}
-        </div>
+        </div> */}
+        <ReactQuill className="h-64" theme="snow" modules={modules} value={content} onChange={setContent} />
 
         {/* <button onClick={handleClick}>버튼</button> */}
       </div>
