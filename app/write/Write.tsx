@@ -1,24 +1,12 @@
 "use client";
-
-import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
-
 import { Button, Dropdown } from "@/components";
 import { DataType } from "@/src/type/types";
 import { switchPostCategory } from "@/src/util/function";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ReactQuill } from "./page";
 
-const ReactQuill = dynamic(
-  async () => {
-    const { default: RQ } = await import("react-quill");
-    return function comp({ forwardedRef, ...props }: any) {
-      return <RQ ref={forwardedRef} {...props} />;
-    };
-  },
-  { ssr: false }
-);
-const Write = () => {
+export const Write = () => {
   const [previewImage, setPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
   const [dropDownValue, setDropDownValue] = useState("게임");
@@ -30,7 +18,6 @@ const Write = () => {
 
   const dropDownList = ["게임", "맛집", "반려동물", "잡담"];
   // const contentEditableRef = useRef<HTMLDivElement>(null);
-
   const router = useRouter();
   const quillRef = useRef<any>();
 
@@ -39,36 +26,23 @@ const Write = () => {
       // 이미지 테그를 삭제하는 코드
       // const contentWithoutImg = postData.content.replace(/<img[^>]*>/g, '');
       // const postDataWithoutImg = { ...postData, content: contentWithoutImg };
-
-      if (quillRef.current) {
-        const quill = quillRef.current.getEditor();
-        const delta = quill.getContents();
-
-        delta.ops.forEach((op: any) => {
-          if (typeof op.insert === "object" && op.insert.hasOwnProperty("image")) {
-            console.log(op);
-            // op.insert.image = '새로운 이미지 URL'; // 변경하려는 URL로 설정
-          }
-        });
+      const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(postData) });
+      if (response.status === 500) {
+        const errorMessage = await response.json();
+        console.log(errorMessage);
+        if (postData.title === "") {
+          return alert("제목을 입력해 주세요");
+        }
+        if (postData.content === "") {
+          return alert("내용을 입력해 주세요");
+        }
       }
-
-      // const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(postData) });
-      // if (response.status === 500) {
-      //   const errorMessage = await response.json();
-      //   console.log(errorMessage);
-      //   if (postData.title === "") {
-      //     return alert("제목을 입력해 주세요");
-      //   }
-      //   if (postData.content === "") {
-      //     return alert("내용을 입력해 주세요");
-      //   }
-      // }
-      // if (response.status === 200) {
-      //   const success = await response.json();
-      //   const switchCategory = switchPostCategory(dropDownValue);
-      //   console.log(success);
-      //   router.push(`/${switchCategory}`);
-      // }
+      if (response.status === 200) {
+        const success = await response.json();
+        const switchCategory = switchPostCategory(dropDownValue);
+        console.log(success);
+        router.push(`/${switchCategory}`);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -80,14 +54,12 @@ const Write = () => {
   //     console.log(contentEditableRef.current.innerHTML);
   //   }
   // };
-
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
       const file = e.target.files[0];
       setPreviewImage(URL.createObjectURL(file));
       setFileName(file.name);
       // console.log(file.name);
-
       const reader = new FileReader();
       reader.onload = () => {
         if (quillRef.current) {
@@ -97,6 +69,12 @@ const Write = () => {
           const delta = quill.getContents();
           if (range) {
             quill.insertEmbed(range.index, "image", String(reader.result));
+
+            delta.ops.forEach((op: any) => {
+              if (typeof op.insert === "object" && op.insert.hasOwnProperty("image")) {
+                op.insert.image = "새로운 이미지 URL"; // 변경하려는 URL로 설정
+              }
+            });
           }
         }
       };
@@ -150,21 +128,21 @@ const Write = () => {
         <p>내용</p>
 
         {/* <div
-          ref={contentEditableRef}
-          contentEditable="true"
-          className="text-xs w-full h-96 border-2 rounded-lg p-4 border-gray-primary overflow-y-scroll"
-          onInput={(e) => {
-            // console.log(e.currentTarget);
-            setPostDate({ ...postData, content: e.currentTarget.innerHTML });
-          }}
-        >
-          <br />
-          {previewImage && (
-            <p className="w-36">
-              <img src={previewImage} alt="previewImage" className="object-cover" />
-            </p>
-          )}
-        </div> */}
+              ref={contentEditableRef}
+              contentEditable="true"
+              className="text-xs w-full h-96 border-2 rounded-lg p-4 border-gray-primary overflow-y-scroll"
+              onInput={(e) => {
+                // console.log(e.currentTarget);
+                setPostDate({ ...postData, content: e.currentTarget.innerHTML });
+              }}
+            >
+              <br />
+              {previewImage && (
+                <p className="w-36">
+                  <img src={previewImage} alt="previewImage" className="object-cover" />
+                </p>
+              )}
+            </div> */}
         <ReactQuill forwardedRef={quillRef} className="h-64" theme="snow" modules={modules} value={content} onChange={setContent} />
 
         {/* <button onClick={handleClick}>버튼</button> */}
@@ -193,7 +171,3 @@ const Write = () => {
     </div>
   );
 };
-
-// 제목 placeholder css : text-[8px] sm:text-[8px] md:text-[10px] lg:text-xs
-
-export default Write;
