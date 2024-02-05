@@ -19,10 +19,11 @@ const ReactQuill = dynamic(
   { ssr: false }
 );
 const Write = () => {
+  const [files, setFiles] = useState<File[]>([]);
+  console.log(files);
   const [previewImage, setPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
   const [dropDownValue, setDropDownValue] = useState("게임");
-  // console.log(dropDownValue);
   const [postData, setPostDate] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
   //에디터에 작성된 데이터
   const [content, setContent] = useState("");
@@ -83,25 +84,29 @@ const Write = () => {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
-      const file = e.target.files[0];
-      setPreviewImage(URL.createObjectURL(file));
-      setFileName(file.name);
-      // console.log(file.name);
+      for (let i = 0; i < e.target.files.length; i++) {
+        const file = e.target.files[i];
+        // console.log(file);
+        // setPreviewImage(URL.createObjectURL(file));
+        setFileName(file.name);
+        // console.log(file.name);
+        setFiles((prevFiles) => [...prevFiles, file]);
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (quillRef.current) {
-          const quill = quillRef.current.getEditor();
-          // const range = quill.getSelection();
-          const range = quill.selection.savedRange;
-          const delta = quill.getContents();
-          if (range) {
-            quill.insertEmbed(range.index, "image", String(reader.result));
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (quillRef.current) {
+            const quill = quillRef.current.getEditor();
+            // const range = quill.getSelection();
+            const range = quill.selection.savedRange;
+            // const delta = quill.getContents();
+            if (range) {
+              quill.insertEmbed(range.index, "image", String(reader.result));
+            }
           }
-        }
-      };
+        };
 
-      reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
+      }
     }
   };
 
