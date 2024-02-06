@@ -56,3 +56,7 @@ body {
 .slick-slide div {
   cursor: pointer;
 } */
+
+.ql-editor img {
+  width: 200px;
+}

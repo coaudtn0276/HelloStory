@@ -20,14 +20,13 @@ const ReactQuill = dynamic(
 );
 const Write = () => {
   const [files, setFiles] = useState<File[]>([]);
-  console.log(files);
+  console.log(files.length);
   const [previewImage, setPreviewImage] = useState("");
   const [fileName, setFileName] = useState("");
   const [dropDownValue, setDropDownValue] = useState("게임");
-  const [postData, setPostDate] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
+  const [postData, setPostData] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
+  console.log(postData);
   //에디터에 작성된 데이터
-  const [content, setContent] = useState("");
-  console.log(content);
 
   const dropDownList = ["게임", "맛집", "반려동물", "잡담"];
   // const contentEditableRef = useRef<HTMLDivElement>(null);
@@ -41,16 +40,21 @@ const Write = () => {
       // const contentWithoutImg = postData.content.replace(/<img[^>]*>/g, '');
       // const postDataWithoutImg = { ...postData, content: contentWithoutImg };
 
-      if (quillRef.current) {
-        const quill = quillRef.current.getEditor();
-        const delta = quill.getContents();
+      if (files.length > 0) {
+        // S3에 첫 번째 이미지 업로드
+        // const s3Url = await uploadToS3(files[0]);
 
-        delta.ops.forEach((op: any) => {
-          if (typeof op.insert === "object" && op.insert.hasOwnProperty("image")) {
-            console.log(op);
-            // op.insert.image = '새로운 이미지 URL'; // 변경하려는 URL로 설정
-          }
-        });
+        // postData.content의 img 태그 src 변경
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(postData.content, "text/html");
+        let imgTags = doc.getElementsByTagName("img");
+        if (imgTags.length > 0) {
+          // 첫 번째 img 태그의 src를 변경
+          imgTags[0].src = "123";
+        }
+        let newHtml = doc.body.innerHTML;
+        setPostData((prev) => ({ ...prev, content: newHtml })); // 변경된 HTML을 저장
+        console.log(postData);
       }
 
       // const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(postData) });
@@ -84,29 +88,36 @@ const Write = () => {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
-      for (let i = 0; i < e.target.files.length; i++) {
-        const file = e.target.files[i];
-        // console.log(file);
-        // setPreviewImage(URL.createObjectURL(file));
-        setFileName(file.name);
-        // console.log(file.name);
-        setFiles((prevFiles) => [...prevFiles, file]);
+      const file = e.target.files[0];
+      // setPreviewImage(URL.createObjectURL(file));
+      setFileName(file.name);
+      setFiles([file]);
 
-        const reader = new FileReader();
-        reader.onload = () => {
-          if (quillRef.current) {
-            const quill = quillRef.current.getEditor();
-            // const range = quill.getSelection();
-            const range = quill.selection.savedRange;
-            // const delta = quill.getContents();
-            if (range) {
-              quill.insertEmbed(range.index, "image", String(reader.result));
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (quillRef.current) {
+          const quill = quillRef.current.getEditor();
+          // const range = quill.getSelection();
+          const range = quill.selection.savedRange;
+          // const delta = quill.getContents();
+          let parser = new DOMParser();
+          let doc = parser.parseFromString(postData.content, "text/html");
+          let imgTags = doc.getElementsByTagName("img");
+          if (imgTags.length === 0) {
+            quill.insertEmbed(range.index, "image", String(reader.result));
+          } else if (imgTags.length > 0) {
+            const delta = quill.getContents();
+            const imgIndex = delta.ops.findIndex((op: any) => op.insert && typeof op.insert === "object" && op.insert.image === imgTags[0].src);
+            if (imgIndex !== -1) {
+              // 기존 이미지를 새 이미지로 교체합니다.
+              delta.ops[imgIndex].insert.image = String(reader.result);
+              quill.setContents(delta, "user");
             }
           }
-        };
+        }
+      };
 
-        reader.readAsDataURL(file);
-      }
+      reader.readAsDataURL(file);
     }
   };
 
@@ -117,7 +128,7 @@ const Write = () => {
   const handleDropDownChange = (value: string) => {
     const switchCategory = switchPostCategory(value);
     if (switchCategory !== undefined) {
-      setPostDate((prevPostData) => ({ ...prevPostData, category: switchCategory }));
+      setPostData((prevPostData) => ({ ...prevPostData, category: switchCategory }));
     }
   };
 
@@ -125,10 +136,21 @@ const Write = () => {
     handleDropDownChange(dropDownValue);
   }, [dropDownValue]);
 
+  useEffect(() => {
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(postData.content, "text/html");
+    let imgTags = doc.getElementsByTagName("img");
+
+    if (imgTags.length === 0) {
+      setFiles([]);
+      setFileName("");
+    }
+  }, [postData.content]);
+
   const modules = useMemo(() => {
     return {
       toolbar: {
-        container: [[{ header: [1, 2, 3, false] }], ["bold", "italic", "underline", "strike"], [{ list: "ordered" }, { list: "bullet" }], [{ color: [] }], [{ align: [] }, "image"]],
+        container: [[{ header: [1, 2, 3, false] }], ["bold", "italic", "underline", "strike"], [{ list: "ordered" }, { list: "bullet" }], [{ color: [] }], [{ align: [] }]],
       },
     };
   }, []);
@@ -147,7 +169,7 @@ const Write = () => {
           placeholder="제목을 입력해 주세요."
           value={postData.title}
           onChange={(e) => {
-            setPostDate((prevPostData) => ({ ...prevPostData, title: e.target.value }));
+            setPostData((prevPostData) => ({ ...prevPostData, title: e.target.value }));
           }}
         />
       </div>
@@ -160,7 +182,7 @@ const Write = () => {
           className="text-xs w-full h-96 border-2 rounded-lg p-4 border-gray-primary overflow-y-scroll"
           onInput={(e) => {
             // console.log(e.currentTarget);
-            setPostDate({ ...postData, content: e.currentTarget.innerHTML });
+            setPostData({ ...postData, content: e.currentTarget.innerHTML });
           }}
         >
           <br />
@@ -170,7 +192,16 @@ const Write = () => {
             </p>
           )}
         </div> */}
-        <ReactQuill forwardedRef={quillRef} className="h-64" theme="snow" modules={modules} value={content} onChange={setContent} />
+        <ReactQuill
+          forwardedRef={quillRef}
+          className="h-64"
+          theme="snow"
+          modules={modules}
+          value={postData.content}
+          onChange={(content: string) => {
+            setPostData((prev) => ({ ...prev, content }));
+          }}
+        />
 
         {/* <button onClick={handleClick}>버튼</button> */}
       </div>
