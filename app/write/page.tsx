@@ -8,6 +8,7 @@ import { DataType } from "@/src/type/types";
 import { switchPostCategory } from "@/src/util/function";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getS3PresignedURL } from "@/src/util/api";
 
 const ReactQuill = dynamic(
   async () => {
@@ -19,13 +20,12 @@ const ReactQuill = dynamic(
   { ssr: false }
 );
 const Write = () => {
-  const [files, setFiles] = useState<File[]>([]);
-  console.log(files.length);
+  const [updateFile, setUpdateFile] = useState<File | null>();
   const [previewImage, setPreviewImage] = useState("");
-  const [fileName, setFileName] = useState("");
+  const [updateFileName, setUpdateFileName] = useState("");
   const [dropDownValue, setDropDownValue] = useState("게임");
   const [postData, setPostData] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
-  console.log(postData);
+  // console.log(postData);
   //에디터에 작성된 데이터
 
   const dropDownList = ["게임", "맛집", "반려동물", "잡담"];
@@ -36,13 +36,31 @@ const Write = () => {
 
   const postApi = async () => {
     try {
-      // 이미지 테그를 삭제하는 코드
-      // const contentWithoutImg = postData.content.replace(/<img[^>]*>/g, '');
-      // const postDataWithoutImg = { ...postData, content: contentWithoutImg };
+      if (updateFile) {
+        // Presigned URL 받아오기
+        // const presignedUrl = await getS3PresignedURL(fileName);
+        // console.log(presignedUrl);
 
-      if (files.length > 0) {
-        // S3에 첫 번째 이미지 업로드
-        // const s3Url = await uploadToS3(files[0]);
+        const fileName = encodeURIComponent(updateFileName);
+        const res = await fetch(`/api/post/image?file=${fileName}`)
+          .then((res) => {
+            return res.json();
+          })
+          .then((res) => {
+            console.log(res);
+            return res;
+          });
+
+        //S3 업로드
+        const formData = new FormData();
+        Object.entries({ ...res.fields, updateFile }).forEach(([key, value]) => {
+          formData.append(key, String(value));
+        });
+        let 업로드결과 = await fetch(res.url, {
+          method: "POST",
+          body: formData,
+        });
+        console.log(업로드결과);
 
         // postData.content의 img 태그 src 변경
         let parser = new DOMParser();
@@ -86,12 +104,35 @@ const Write = () => {
   //   }
   // };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
       const file = e.target.files[0];
       // setPreviewImage(URL.createObjectURL(file));
-      setFileName(file.name);
-      setFiles([file]);
+      setUpdateFileName(file.name);
+      setUpdateFile(file);
+
+      const fileName = encodeURIComponent(file.name);
+      const res = await fetch(`/api/post/image?file=${fileName}`)
+        .then((res) => {
+          return res.json();
+        })
+        .then((res) => {
+          console.log(res);
+          return res;
+        });
+
+      // const presignedUrl = await getS3PresignedURL(file.name);
+
+      //S3 업로드
+      const formData = new FormData();
+      Object.entries({ ...res.fields, file }).forEach(([key, value]) => {
+        formData.append(key, String(value));
+      });
+      let 업로드결과 = await fetch(res.url, {
+        method: "POST",
+        body: formData,
+      });
+      console.log(업로드결과);
 
       const reader = new FileReader();
       reader.onload = () => {
@@ -109,7 +150,7 @@ const Write = () => {
             const delta = quill.getContents();
             const imgIndex = delta.ops.findIndex((op: any) => op.insert && typeof op.insert === "object" && op.insert.image === imgTags[0].src);
             if (imgIndex !== -1) {
-              // 기존 이미지를 새 이미지로 교체합니다.
+              // 기존 이미지를 새 이미지로 교체
               delta.ops[imgIndex].insert.image = String(reader.result);
               quill.setContents(delta, "user");
             }
@@ -142,8 +183,8 @@ const Write = () => {
     let imgTags = doc.getElementsByTagName("img");
 
     if (imgTags.length === 0) {
-      setFiles([]);
-      setFileName("");
+      setUpdateFile(null);
+      setUpdateFileName("");
     }
   }, [postData.content]);
 
@@ -176,22 +217,6 @@ const Write = () => {
       <div className="mb-16">
         <p>내용</p>
 
-        {/* <div
-          ref={contentEditableRef}
-          contentEditable="true"
-          className="text-xs w-full h-96 border-2 rounded-lg p-4 border-gray-primary overflow-y-scroll"
-          onInput={(e) => {
-            // console.log(e.currentTarget);
-            setPostData({ ...postData, content: e.currentTarget.innerHTML });
-          }}
-        >
-          <br />
-          {previewImage && (
-            <p className="w-36">
-              <img src={previewImage} alt="previewImage" className="object-cover" />
-            </p>
-          )}
-        </div> */}
         <ReactQuill
           forwardedRef={quillRef}
           className="h-64"
@@ -202,13 +227,11 @@ const Write = () => {
             setPostData((prev) => ({ ...prev, content }));
           }}
         />
-
-        {/* <button onClick={handleClick}>버튼</button> */}
       </div>
       <div className="mb-4">
         <p>첨부파일</p>
         <div className="flex justify-between">
-          <p className="flex items-center flex-auto border-2 border-gray-primary rounded-lg px-2 mr-2 text-[#c3c3c3]">{fileName ? fileName : "최대 5MB, 확장자 jpg, png, gif"}</p>
+          <p className="flex items-center flex-auto border-2 border-gray-primary rounded-lg px-2 mr-2 text-[#c3c3c3]">{updateFileName ? updateFileName : "최대 1MB, 확장자 jpg, png, gif"}</p>
 
           <div className="border-2 border-gray-box rounded-lg cursor-pointer px-6 py-1 text-gray-boxText bg-gray-box">
             <label htmlFor="file-upload">파일 찾기</label>

@@ -60,3 +60,16 @@ export type itemIdProps = {
   };
   searchParams: string;
 };
+
+export type PresignedUrlResponse = {
+  url: string;
+  fields: {
+    Policy: string;
+    "X-Amz-Algorithm": string;
+    "X-Amz-Credential": string;
+    "X-Amz-Date": string;
+    "X-Amz-Signature": string;
+    bucket: string;
+    key: string;
+  };
+};
