@@ -107,7 +107,7 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
             setPostDate({ ...postData, content: e.currentTarget.innerHTML });
           }}
         >
-          {/* {postData.content && <div dangerouslySetInnerHTML={{ __html: postData.content }} />} */}
+          {postData.content && <div dangerouslySetInnerHTML={{ __html: postData.content }} />}
           <br />
           {previewImage && (
             <p className="w-36">

@@ -21,118 +21,90 @@ const ReactQuill = dynamic(
 );
 const Write = () => {
   const [updateFile, setUpdateFile] = useState<File | null>();
-  const [previewImage, setPreviewImage] = useState("");
   const [updateFileName, setUpdateFileName] = useState("");
+  const [updateSrc, setUpdateSrc] = useState<string>();
+  console.log(updateSrc);
+
   const [dropDownValue, setDropDownValue] = useState("게임");
   const [postData, setPostData] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
-  // console.log(postData);
+  console.log(postData);
   //에디터에 작성된 데이터
 
   const dropDownList = ["게임", "맛집", "반려동물", "잡담"];
-  // const contentEditableRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
   const quillRef = useRef<any>();
 
   const postApi = async () => {
     try {
+      // 제목이나 내용이 비어있는지 확인
+      if (postData.title === "") {
+        return alert("제목을 입력해 주세요");
+      }
+      if (postData.content === "") {
+        return alert("내용을 입력해 주세요");
+      }
       if (updateFile) {
         // Presigned URL 받아오기
-        // const presignedUrl = await getS3PresignedURL(fileName);
-        // console.log(presignedUrl);
+        const presignedUrl = await getS3PresignedURL(updateFile);
+        console.log(presignedUrl);
 
-        const fileName = encodeURIComponent(updateFileName);
-        const res = await fetch(`/api/post/image?file=${fileName}`)
-          .then((res) => {
-            return res.json();
-          })
-          .then((res) => {
-            console.log(res);
-            return res;
-          });
-
-        //S3 업로드
-        const formData = new FormData();
-        Object.entries({ ...res.fields, updateFile }).forEach(([key, value]) => {
-          formData.append(key, String(value));
+        // S3 업로드
+        let s3UpladRes = await fetch(presignedUrl.url, {
+          method: "PUT",
+          body: updateFile,
+          headers: { "Content-Type": updateFile.type },
         });
-        let 업로드결과 = await fetch(res.url, {
-          method: "POST",
-          body: formData,
-        });
-        console.log(업로드결과);
+        console.log(s3UpladRes);
 
+        if (s3UpladRes.ok) {
+          const s3FileUrl = `https://hellostory.s3.ap-northeast-2.amazonaws.com/${updateFile.name}`;
+          setUpdateSrc(s3FileUrl);
+        } else {
+          console.log("s3Update 실패");
+        }
         // postData.content의 img 태그 src 변경
         let parser = new DOMParser();
         let doc = parser.parseFromString(postData.content, "text/html");
         let imgTags = doc.getElementsByTagName("img");
-        if (imgTags.length > 0) {
+        if (imgTags.length > 0 && updateSrc !== undefined) {
           // 첫 번째 img 태그의 src를 변경
-          imgTags[0].src = "123";
+
+          imgTags[0].src = updateSrc;
         }
         let newHtml = doc.body.innerHTML;
         setPostData((prev) => ({ ...prev, content: newHtml })); // 변경된 HTML을 저장
-        console.log(postData);
+        // console.log(postData);
       }
 
-      // const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(postData) });
-      // if (response.status === 500) {
-      //   const errorMessage = await response.json();
-      //   console.log(errorMessage);
-      //   if (postData.title === "") {
-      //     return alert("제목을 입력해 주세요");
-      //   }
-      //   if (postData.content === "") {
-      //     return alert("내용을 입력해 주세요");
-      //   }
-      // }
-      // if (response.status === 200) {
-      //   const success = await response.json();
-      //   const switchCategory = switchPostCategory(dropDownValue);
-      //   console.log(success);
-      //   router.push(`/${switchCategory}`);
-      // }
+      const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(postData) });
+      if (response.status === 500) {
+        const errorMessage = await response.json();
+        console.log(errorMessage);
+        if (postData.title === "") {
+          return alert("제목을 입력해 주세요");
+        }
+        if (postData.content === "") {
+          return alert("내용을 입력해 주세요");
+        }
+      }
+      if (response.status === 200) {
+        const success = await response.json();
+        const switchCategory = switchPostCategory(dropDownValue);
+        console.log(success);
+        router.push(`/${switchCategory}`);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  // content에 사용자가 작성한 내용이 어떤태그들이 들어오는지 테스트 버튼
-  // const handleClick = () => {
-  //   if (contentEditableRef.current !== null) {
-  //     console.log(contentEditableRef.current.innerHTML);
-  //   }
-  // };
-
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
       const file = e.target.files[0];
-      // setPreviewImage(URL.createObjectURL(file));
-      setUpdateFileName(file.name);
+      // console.log("file", file);
       setUpdateFile(file);
-
-      const fileName = encodeURIComponent(file.name);
-      const res = await fetch(`/api/post/image?file=${fileName}`)
-        .then((res) => {
-          return res.json();
-        })
-        .then((res) => {
-          console.log(res);
-          return res;
-        });
-
-      // const presignedUrl = await getS3PresignedURL(file.name);
-
-      //S3 업로드
-      const formData = new FormData();
-      Object.entries({ ...res.fields, file }).forEach(([key, value]) => {
-        formData.append(key, String(value));
-      });
-      let 업로드결과 = await fetch(res.url, {
-        method: "POST",
-        body: formData,
-      });
-      console.log(업로드결과);
+      setUpdateFileName(file.name);
 
       const reader = new FileReader();
       reader.onload = () => {
@@ -249,6 +221,7 @@ const Write = () => {
           </Button>
         </span>
       </div>
+      <img src={updateSrc} alt="icon" />
     </div>
   );
 };
