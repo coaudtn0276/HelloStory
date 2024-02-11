@@ -44,6 +44,8 @@ const Write = () => {
       if (postData.content === "") {
         return alert("내용을 입력해 주세요");
       }
+
+      let newPostData = { ...postData };
       if (updateFile) {
         // Presigned URL 받아오기
         const presignedUrl = await getS3PresignedURL(updateFile);
@@ -60,24 +62,24 @@ const Write = () => {
         if (s3UpladRes.ok) {
           const s3FileUrl = `https://hellostory.s3.ap-northeast-2.amazonaws.com/${updateFile.name}`;
           setUpdateSrc(s3FileUrl);
+          // postData.content의 img 태그 src 변경
+          let parser = new DOMParser();
+          let doc = parser.parseFromString(postData.content, "text/html");
+          let imgTags = doc.getElementsByTagName("img");
+          if (imgTags.length > 0) {
+            // 첫 번째 img 태그의 src를 변경
+            imgTags[0].src = s3FileUrl;
+          }
+          let newHtml = doc.body.innerHTML;
+          // 작성되어있는 데이터의 복사본을 만들어서 api보내기
+          newPostData = { ...postData, content: newHtml };
+          // setPostData((prev) => ({ ...prev, content: newHtml })); // 변경된 HTML을 저장
+          // console.log(newPostData);
         } else {
           console.log("s3Update 실패");
         }
-        // postData.content의 img 태그 src 변경
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(postData.content, "text/html");
-        let imgTags = doc.getElementsByTagName("img");
-        if (imgTags.length > 0 && updateSrc !== undefined) {
-          // 첫 번째 img 태그의 src를 변경
-
-          imgTags[0].src = updateSrc;
-        }
-        let newHtml = doc.body.innerHTML;
-        setPostData((prev) => ({ ...prev, content: newHtml })); // 변경된 HTML을 저장
-        // console.log(postData);
       }
-
-      const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(postData) });
+      const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(newPostData) });
       if (response.status === 500) {
         const errorMessage = await response.json();
         console.log(errorMessage);
