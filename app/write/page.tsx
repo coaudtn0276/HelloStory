@@ -22,8 +22,8 @@ const ReactQuill = dynamic(
 const Write = () => {
   const [updateFile, setUpdateFile] = useState<File | null>();
   const [updateFileName, setUpdateFileName] = useState("");
-  const [updateSrc, setUpdateSrc] = useState<string>();
-  console.log(updateSrc);
+  // const [updateSrc, setUpdateSrc] = useState<string>();
+  // console.log(updateSrc);
 
   const [dropDownValue, setDropDownValue] = useState("게임");
   const [postData, setPostData] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
@@ -60,8 +60,9 @@ const Write = () => {
         console.log(s3UpladRes);
 
         if (s3UpladRes.ok) {
-          const s3FileUrl = `https://hellostory.s3.ap-northeast-2.amazonaws.com/${updateFile.name}`;
-          setUpdateSrc(s3FileUrl);
+          const s3FileUrl = `https://hellostory.s3.ap-northeast-2.amazonaws.com/${presignedUrl.fileName}`;
+          // setUpdateSrc(s3FileUrl);
+
           // postData.content의 img 태그 src 변경
           let parser = new DOMParser();
           let doc = parser.parseFromString(postData.content, "text/html");
@@ -72,7 +73,7 @@ const Write = () => {
           }
           let newHtml = doc.body.innerHTML;
           // 작성되어있는 데이터의 복사본을 만들어서 api보내기
-          newPostData = { ...postData, content: newHtml };
+          newPostData = { ...postData, content: newHtml, imgUrl: presignedUrl.fileName };
           // setPostData((prev) => ({ ...prev, content: newHtml })); // 변경된 HTML을 저장
           // console.log(newPostData);
         } else {
@@ -104,6 +105,9 @@ const Write = () => {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
       const file = e.target.files[0];
+      if (file.size > 1048576) {
+        return alert("파일 크기는 1MB 이하의 파일만 업로드 가능합니다.");
+      }
       // console.log("file", file);
       setUpdateFile(file);
       setUpdateFileName(file.name);
@@ -223,7 +227,7 @@ const Write = () => {
           </Button>
         </span>
       </div>
-      <img src={updateSrc} alt="icon" />
+      {/* <img src={updateSrc} alt="icon" /> */}
     </div>
   );
 };
