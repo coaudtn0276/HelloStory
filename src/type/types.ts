@@ -73,3 +73,8 @@ export type PresignedUrlResponse = {
     key: string;
   };
 };
+
+export type ParamsType = {
+  Bucket: string;
+  Key: string;
+};

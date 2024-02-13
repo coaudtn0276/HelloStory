@@ -24,7 +24,7 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
   const [updateFile, setUpdateFile] = useState<File | null>();
   console.log(updateFile);
   const [updateFileName, setUpdateFileName] = useState("");
-  const [contentImgValue, setContentImgValue] = useState(true);
+  // const [contentImgValue, setContentImgValue] = useState(true);
   // const [updateSrc, setUpdateSrc] = useState<string>();
   // console.log(updateSrc);
 
@@ -51,55 +51,59 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
       let newPostData = { ...postData };
 
       // 만약 content에서 img태그가 삭제됬거나
-      if (updateFile) {
-        // Presigned URL 받아오기
-        const presignedUrl = await getS3PresignedURL(updateFile);
+      // if (updateFile) {
+      //기존 s3 이미지 삭제
+      const deleteS3Image = await fetch(`/api/delete/deleteImage?fileName=${postData.imgUrl}`);
+      console.log(deleteS3Image.status);
 
-        // S3 업로드
-        let s3UpladRes = await fetch(presignedUrl.url, {
-          method: "PUT",
-          body: updateFile,
-          headers: { "Content-Type": updateFile.type },
-        });
-        console.log(s3UpladRes);
+      // // Presigned URL 받아오기
+      // const presignedUrl = await getS3PresignedURL(updateFile);
 
-        if (s3UpladRes.ok) {
-          const s3FileUrl = `https://hellostory.s3.ap-northeast-2.amazonaws.com/${presignedUrl.fileName}`;
-          // setUpdateSrc(s3FileUrl);
-          // postData.content의 img 태그 src 변경
-          let parser = new DOMParser();
-          let doc = parser.parseFromString(postData.content, "text/html");
-          let imgTags = doc.getElementsByTagName("img");
-          if (imgTags.length > 0) {
-            // 첫 번째 img 태그의 src를 변경
-            imgTags[0].src = s3FileUrl;
-          }
-          let newHtml = doc.body.innerHTML;
-          // 작성되어있는 데이터의 복사본을 만들어서 api보내기
-          newPostData = { ...postData, content: newHtml, imgUrl: presignedUrl.fileName };
-          // setPostData((prev) => ({ ...prev, content: newHtml })); // 변경된 HTML을 저장
-          // console.log(newPostData);
-        } else {
-          console.log("s3Update 실패");
-        }
-      }
-      const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(newPostData) });
-      if (response.status === 500) {
-        const errorMessage = await response.json();
-        console.log(errorMessage);
-        if (postData.title === "") {
-          return alert("제목을 입력해 주세요");
-        }
-        if (postData.content === "") {
-          return alert("내용을 입력해 주세요");
-        }
-      }
-      if (response.status === 200) {
-        const success = await response.json();
-        const switchCategory = switchPostCategory(dropDownValue);
-        console.log(success);
-        router.push(`/${switchCategory}`);
-      }
+      // // S3 업로드
+      // let s3UpladRes = await fetch(presignedUrl.url, {
+      //   method: "PUT",
+      //   body: updateFile,
+      //   headers: { "Content-Type": updateFile.type },
+      // });
+      // console.log(s3UpladRes);
+
+      // if (s3UpladRes.ok) {
+      //   const s3FileUrl = `https://hellostory.s3.ap-northeast-2.amazonaws.com/${presignedUrl.fileName}`;
+      //   // setUpdateSrc(s3FileUrl);
+      //   // postData.content의 img 태그 src 변경
+      //   let parser = new DOMParser();
+      //   let doc = parser.parseFromString(postData.content, "text/html");
+      //   let imgTags = doc.getElementsByTagName("img");
+      //   if (imgTags.length > 0) {
+      //     // 첫 번째 img 태그의 src를 변경
+      //     imgTags[0].src = s3FileUrl;
+      //   }
+      //   let newHtml = doc.body.innerHTML;
+      //   // 작성되어있는 데이터의 복사본을 만들어서 api보내기
+      //   newPostData = { ...postData, content: newHtml, imgUrl: presignedUrl.fileName };
+      //   // setPostData((prev) => ({ ...prev, content: newHtml })); // 변경된 HTML을 저장
+      //   // console.log(newPostData);
+      // } else {
+      //   console.log("s3Update 실패");
+      // }
+      // }
+      // const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(newPostData) });
+      // if (response.status === 500) {
+      //   const errorMessage = await response.json();
+      //   console.log(errorMessage);
+      //   if (postData.title === "") {
+      //     return alert("제목을 입력해 주세요");
+      //   }
+      //   if (postData.content === "") {
+      //     return alert("내용을 입력해 주세요");
+      //   }
+      // }
+      // if (response.status === 200) {
+      //   const success = await response.json();
+      //   const switchCategory = switchPostCategory(dropDownValue);
+      //   console.log(success);
+      //   router.push(`/${switchCategory}`);
+      // }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -125,16 +129,14 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
           let parser = new DOMParser();
           let doc = parser.parseFromString(postData.content, "text/html");
           let imgTags = doc.getElementsByTagName("img");
+
           if (imgTags.length === 0) {
             quill.insertEmbed(range.index, "image", String(reader.result));
           } else if (imgTags.length > 0) {
-            const delta = quill.getContents();
-            const imgIndex = delta.ops.findIndex((op: any) => op.insert && typeof op.insert === "object" && op.insert.image === imgTags[0].src);
-            if (imgIndex !== -1) {
-              // 기존 이미지를 새 이미지로 교체
-              delta.ops[imgIndex].insert.image = String(reader.result);
-              quill.setContents(delta, "user");
-            }
+            imgTags[0].src = String(reader.result); // 이미지 URL 변경하기
+            let newHtml = doc.documentElement.innerHTML; // 변경된 HTML 가져오기
+
+            quill.setContents(quill.clipboard.convert(newHtml), "user"); // 변경된 HTML을 편집기에 설정하기
           }
         }
       };
@@ -166,10 +168,11 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
     if (imgTags.length === 0) {
       setUpdateFile(null);
       setUpdateFileName("");
-      setContentImgValue(false);
+      // setContentImgValue(false);
     }
   }, [postData.content]);
 
+  // 유저 아이디에 맞는 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -181,10 +184,16 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
         if (response.status === 200) {
           const data = await response.json();
           const parseData = JSON.parse(data);
+
+          // uuid있는 imgUrl에서 uuid를 제외한 파일이름만 가져오기
+          let parts = parseData.imgUrl.split(".");
+          let fileName = parts.slice(1).join(".");
+
           const switchCategorey = switchCategory(parseData.category);
           // console.log(switchCategorey);
 
           setPostData(parseData);
+          setUpdateFileName(fileName);
           if (switchCategorey !== undefined) {
             setDropDownValue(switchCategorey);
           }

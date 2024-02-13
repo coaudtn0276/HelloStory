@@ -1,7 +1,7 @@
 import { ServerPropsType } from "@/src/type/types";
 import aws from "aws-sdk";
 import { v4 } from "uuid";
-export const handler = async (...[req, res]: ServerPropsType) => {
+const handler = async (...[req, res]: ServerPropsType) => {
   aws.config.update({
     accessKeyId: process.env.ACCESS_KEY,
     secretAccessKey: process.env.SECRET_KEY,

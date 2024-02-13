@@ -125,13 +125,10 @@ const Write = () => {
           if (imgTags.length === 0) {
             quill.insertEmbed(range.index, "image", String(reader.result));
           } else if (imgTags.length > 0) {
-            const delta = quill.getContents();
-            const imgIndex = delta.ops.findIndex((op: any) => op.insert && typeof op.insert === "object" && op.insert.image === imgTags[0].src);
-            if (imgIndex !== -1) {
-              // 기존 이미지를 새 이미지로 교체
-              delta.ops[imgIndex].insert.image = String(reader.result);
-              quill.setContents(delta, "user");
-            }
+            imgTags[0].src = String(reader.result); // 이미지 URL 변경하기
+            let newHtml = doc.documentElement.innerHTML; // 변경된 HTML 가져오기
+
+            quill.setContents(quill.clipboard.convert(newHtml), "user"); // 변경된 HTML을 편집기에 설정하기
           }
         }
       };
