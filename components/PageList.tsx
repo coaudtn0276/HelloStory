@@ -6,11 +6,14 @@ import { testdata } from "@/testdata";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Dropdown, Pagination } from ".";
+import { changeDate, switchPostCategory } from "@/src/util/function";
+import Link from "next/link";
 
 const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
+  // console.log(data);
   // 전체 data중에서 최신 등록 순으로 정렬
   const [inputValue, setInputValue] = useState("");
-  const [dataToUse, setDataUse] = useState(testdata);
+  const [dataToUse, setDataUse] = useState(data);
   const [riseFallValue, setRiseFallValue] = useState(false);
   const [dropDownValue, setDropDownValue] = useState("");
 
@@ -24,25 +27,41 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
 
   useEffect(() => {
     if (riseFallValue) {
-      const riseFallData = [...testdata].sort((a, b) => b.views - a.views);
+      const riseFallData = [...data].sort((a, b) => b.views - a.views);
       setDataUse(riseFallData);
     } else {
-      setDataUse(testdata);
+      setDataUse(data);
     }
-  }, [riseFallValue]);
+  }, [riseFallValue, data]);
 
   const totalPosts = dataToUse.slice(offset, offset + postsPerPage).map((el, idx) => {
+    const changeModiDate = changeDate(el.modificationDate);
+    const stringItmeId = el._id.toString();
+    const switchCategory = switchPostCategory(containerTitle);
+
     return (
-      <div key={idx} className="flex justify-between py-[2px] font-l text-center border-b-[1px] border-b-[#bdbdbd]">
+      // /detail/[itmeId]를 만들고 내부의 {...}stroy부분은 useEffect로 가져온 데이터의 category를 받아서 변경
+      <Link href={`/detail/${stringItmeId}`} key={stringItmeId} className="flex justify-between py-[2px] font-l text-center border-b-[1px] border-b-[#bdbdbd]">
         <p style={{ flex: 1 }}>{idx + 1}</p>
-        <p style={{ flex: 4 }} className="flex items-center text-left">
-          {el.title}
-          {el.imgUrl !== "" && <Image src={photoIcon} alt="사진 아이콘" className="ml-2 w-2 sm:w-2 md:w-3 lg:w-4 h-2 sm:h-2 md:h-3 lg:h-4" />}
-        </p>
-        <p style={{ flex: 1 }}>{el.modificationDate}</p>
+        <div style={{ flex: 4 }} className="flex items-center text-left mr-4">
+          <div
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              wordWrap: "break-word",
+              display: "-webkit-box",
+              WebkitLineClamp: "1",
+              WebkitBoxOrient: "vertical",
+            }}
+          >
+            {el.title}
+          </div>
+          {el.imgUrl !== "" && <Image src={photoIcon} alt="사진 아이콘" className="ml-2 w-2 sm:w-2 md:w-3 lg:w-4" />}
+        </div>
+        <p style={{ flex: 1 }}>{changeModiDate}</p>
         <p style={{ flex: 1 }}>{el.author}</p>
         <p style={{ flex: 1 }}>{el.views}</p>
-      </div>
+      </Link>
     );
   });
 
@@ -78,7 +97,7 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
 
       <div className="flex flex-col">
         <span className="mb-2">
-          <Pagination totalPosts={testdata.length} postsPerPage={postsPerPage} currentPage={currentPage} handler={setPage} />
+          <Pagination totalPosts={data.length} postsPerPage={postsPerPage} currentPage={currentPage} handler={setPage} />
         </span>
         <span className="flex justify-center items-center">
           <span className="mr-2">

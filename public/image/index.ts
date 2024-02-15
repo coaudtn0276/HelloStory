@@ -7,3 +7,4 @@ export { default as postImg } from "./postImg.svg";
 export { default as searchImg } from "./searchImg.svg";
 export { default as photoIcon } from "./photoIcon.svg";
 export { default as menuIcon } from "./menuIcon.svg";
+export { default as importantIcon } from "./importantIcon.svg";

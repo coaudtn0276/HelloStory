@@ -78,3 +78,7 @@ export type ParamsType = {
   Bucket: string;
   Key: string;
 };
+
+export type ModalProps = {
+  checkHandler: () => void;
+};

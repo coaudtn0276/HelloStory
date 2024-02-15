@@ -23,3 +23,23 @@ export const switchPostCategory = (category: string) => {
       return "restaurant";
   }
 };
+
+export const findImgTag = (content: string) => {
+  let parser = new DOMParser();
+  let doc = parser.parseFromString(content, "text/html");
+  let imgTags = doc.getElementsByTagName("img");
+
+  return imgTags;
+};
+
+export const changeDate = (value: string) => {
+  let date = new Date(value);
+
+  let year = date.getFullYear();
+  let month = (1 + date.getMonth()).toString().padStart(2, "0");
+  let day = date.getDate().toString().padStart(2, "0");
+
+  let formattedDate = `${year}.${month}.${day}`;
+
+  return formattedDate;
+};

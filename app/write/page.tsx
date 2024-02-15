@@ -22,8 +22,6 @@ const ReactQuill = dynamic(
 const Write = () => {
   const [updateFile, setUpdateFile] = useState<File | null>();
   const [updateFileName, setUpdateFileName] = useState("");
-  // const [updateSrc, setUpdateSrc] = useState<string>();
-  // console.log(updateSrc);
 
   const [dropDownValue, setDropDownValue] = useState("게임");
   const [postData, setPostData] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
@@ -36,15 +34,14 @@ const Write = () => {
   const quillRef = useRef<any>();
 
   const postApi = async () => {
+    // 제목이나 내용이 비어있는지 확인
+    if (postData.title === "") {
+      return alert("제목을 입력해 주세요");
+    }
+    if (postData.content === "") {
+      return alert("내용을 입력해 주세요");
+    }
     try {
-      // 제목이나 내용이 비어있는지 확인
-      if (postData.title === "") {
-        return alert("제목을 입력해 주세요");
-      }
-      if (postData.content === "") {
-        return alert("내용을 입력해 주세요");
-      }
-
       let newPostData = { ...postData };
       if (updateFile) {
         // Presigned URL 받아오기
@@ -74,8 +71,6 @@ const Write = () => {
           let newHtml = doc.body.innerHTML;
           // 작성되어있는 데이터의 복사본을 만들어서 api보내기
           newPostData = { ...postData, content: newHtml, imgUrl: presignedUrl.fileName };
-          // setPostData((prev) => ({ ...prev, content: newHtml })); // 변경된 HTML을 저장
-          // console.log(newPostData);
         } else {
           console.log("s3Update 실패");
         }
