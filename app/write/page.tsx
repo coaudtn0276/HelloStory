@@ -8,7 +8,7 @@ import { DataType } from "@/src/type/types";
 import { switchPostCategory } from "@/src/util/function";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getS3PresignedURL } from "@/src/util/api";
+import { getS3PresignedURL, postApi } from "@/src/util/api";
 
 const ReactQuill = dynamic(
   async () => {
@@ -33,68 +33,8 @@ const Write = () => {
   const router = useRouter();
   const quillRef = useRef<any>();
 
-  const postApi = async () => {
-    // 제목이나 내용이 비어있는지 확인
-    if (postData.title === "") {
-      return alert("제목을 입력해 주세요");
-    }
-    if (postData.content === "") {
-      return alert("내용을 입력해 주세요");
-    }
-    try {
-      let newPostData = { ...postData };
-      if (updateFile) {
-        // Presigned URL 받아오기
-        const presignedUrl = await getS3PresignedURL(updateFile);
-        console.log(presignedUrl);
-
-        // S3 업로드
-        let s3UpladRes = await fetch(presignedUrl.url, {
-          method: "PUT",
-          body: updateFile,
-          headers: { "Content-Type": updateFile.type },
-        });
-        console.log(s3UpladRes);
-
-        if (s3UpladRes.ok) {
-          const s3FileUrl = `https://hellostory.s3.ap-northeast-2.amazonaws.com/${presignedUrl.fileName}`;
-          // setUpdateSrc(s3FileUrl);
-
-          // postData.content의 img 태그 src 변경
-          let parser = new DOMParser();
-          let doc = parser.parseFromString(postData.content, "text/html");
-          let imgTags = doc.getElementsByTagName("img");
-          if (imgTags.length > 0) {
-            // 첫 번째 img 태그의 src를 변경
-            imgTags[0].src = s3FileUrl;
-          }
-          let newHtml = doc.body.innerHTML;
-          // 작성되어있는 데이터의 복사본을 만들어서 api보내기
-          newPostData = { ...postData, content: newHtml, imgUrl: presignedUrl.fileName };
-        } else {
-          console.log("s3Update 실패");
-        }
-      }
-      const response = await fetch("/api/post/new", { method: "POST", body: JSON.stringify(newPostData) });
-      if (response.status === 500) {
-        const errorMessage = await response.json();
-        console.log(errorMessage);
-        if (postData.title === "") {
-          return alert("제목을 입력해 주세요");
-        }
-        if (postData.content === "") {
-          return alert("내용을 입력해 주세요");
-        }
-      }
-      if (response.status === 200) {
-        const success = await response.json();
-        const switchCategory = switchPostCategory(dropDownValue);
-        console.log(success);
-        router.push(`/${switchCategory}`);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+  const handlePostApi = async () => {
+    await postApi({ postData, updateFile, dropDownValue, router });
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -210,7 +150,7 @@ const Write = () => {
         </div>
       </div>
       <div className="flex flex-row-reverse">
-        <Button bg="bg-orange" px="px-6" textSize="text-xs sm:text-sm md:text-base lg:text-lg" textColor="text-white" handler={postApi}>
+        <Button bg="bg-orange" px="px-6" textSize="text-xs sm:text-sm md:text-base lg:text-lg" textColor="text-white" handler={handlePostApi}>
           작성 완료
         </Button>
         <span className="mr-2">

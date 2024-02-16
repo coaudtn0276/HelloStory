@@ -3,7 +3,7 @@ import { Button } from ".";
 import { importantIcon } from "@/public/image";
 import { ModalProps } from "@/src/type/types";
 
-const DeleteModal: React.FC<ModalProps> = ({ checkHandler }) => {
+const DeleteModal: React.FC<ModalProps> = ({ checkHandler, deleteHandler }) => {
   return (
     <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gray-500 bg-opacity-50" onClick={checkHandler}>
       <div className="inline-flex flex-col p-10 text-sm sm:text-base md:text-lg lg:text-xl border-2 border-gray-box bg-white rounded-lg ">
@@ -23,7 +23,7 @@ const DeleteModal: React.FC<ModalProps> = ({ checkHandler }) => {
             돌아가기
           </Button>
           <span className="ml-4 ">
-            <Button bg="bg-red" px="px-5" textSize="text-xs sm:text-xs md:text-sm lg:text-base" textColor="text-white">
+            <Button bg="bg-red" px="px-5" textSize="text-xs sm:text-xs md:text-sm lg:text-base" textColor="text-white" handler={deleteHandler}>
               삭제하기
             </Button>
           </span>

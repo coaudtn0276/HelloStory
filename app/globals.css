@@ -57,20 +57,19 @@ body {
   cursor: pointer;
 } */
 
-/* quill 스타일 */
+/* quill에디터 내부 스타일 */
 .ql-editor img {
   width: 50%;
 }
 
-/* 에디터에 들어갈 글자 크기 */
-h1 {
+.ql-editor h1 {
   font-size: 2em;
 }
 
-h2 {
+.ql-editor h2 {
   font-size: 1.5em;
 }
 
-h3 {
+.ql-editor h3 {
   font-size: 1.17em;
 }

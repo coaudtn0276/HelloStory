@@ -8,11 +8,12 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 
-import { Button, DeleteModal } from "@/components";
+import { Button, DeleteModal, DeleteSuccessModal } from "@/components";
 import { photoIcon } from "@/public/image";
 
-import { DataType, itemIdProps } from "@/src/type/types";
+import { DataType, PostDocument, itemIdProps } from "@/src/type/types";
 import { changeDate, switchCategory } from "@/src/util/function";
+import { deleteApi } from "@/src/util/api";
 
 const ReactQuill = dynamic(
   async () => {
@@ -25,16 +26,26 @@ const ReactQuill = dynamic(
 );
 
 const Detail: React.FC<itemIdProps> = ({ params }) => {
-  const [getData, setGetdata] = useState<DataType>();
+  const [getData, setGetdata] = useState<PostDocument>();
   const [changeModiDate, setChangeModiDate] = useState<String>();
-  // console.log(getData);
+  console.log(getData);
   const [categoryValue, setCategoryValue] = useState<"게임" | "반려동물" | "잡담" | "맛집">();
   const [checkModal, setCheckModal] = useState(false);
+  const [deleteValue, setDeleteValue] = useState();
 
   const router = useRouter();
 
+  const handleDeleteApi = async () => {
+    const deleteResponse = await deleteApi({ getData, router });
+    setDeleteValue(deleteResponse);
+  };
+
   const handleEdit = () => {
     router.push(`/edit/${params.itemId}`);
+  };
+
+  const handleSuccess = () => {
+    router.push(`/${getData?.category}`);
   };
 
   const handleCheckModal = () => {
@@ -76,10 +87,10 @@ const Detail: React.FC<itemIdProps> = ({ params }) => {
   return (
     <div className="text-xs sm:text-sm md:text-base lg:text-lg">
       <div className="flex">
-        <h2 className="my-2 font-b">
+        <p className="my-2 font-b">
           <span className="text-orange">{categoryValue} </span>
           story
-        </h2>
+        </p>
       </div>
       <div className="flex flex-col border-t-2 border-gray-boxText mb-2">
         <div className="flex flex-wrap items-center justify-between py-1 px-4 font-b text-center">
@@ -119,7 +130,8 @@ const Detail: React.FC<itemIdProps> = ({ params }) => {
           </span>
         </div>
       </div>
-      {checkModal && <DeleteModal checkHandler={handleCheckModal} />}
+      {checkModal && <DeleteModal checkHandler={handleCheckModal} deleteHandler={handleDeleteApi} />}
+      {deleteValue === "success" && <DeleteSuccessModal handler={handleSuccess} />}
     </div>
   );
 };

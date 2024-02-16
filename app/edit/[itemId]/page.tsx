@@ -8,7 +8,7 @@ import { DataType, itemIdProps } from "@/src/type/types";
 import { findImgTag, switchCategory, switchPostCategory } from "@/src/util/function";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getS3PresignedURL } from "@/src/util/api";
+import { getS3PresignedURL, putApi } from "@/src/util/api";
 
 const ReactQuill = dynamic(
   async () => {
@@ -37,81 +37,9 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
   const router = useRouter();
   const quillRef = useRef<any>();
 
-  const putApi = async () => {
-    // 제목이나 내용이 수정됬는지 확인
-    if (originalPostData?.content === postData.content) {
-      return alert("수정된 내용이 없습니다.");
-    }
-
-    try {
-      let newPutData = { ...postData };
-      const imgTag = findImgTag(newPutData.content);
-
-      // 만약 content에서 img태그가 삭제됬거나 새로고쳐 졌을때
-      if (imgTag.length === 0) {
-        const deleteS3Image = await fetch(`/api/delete/deleteImage?fileName=${postData.imgUrl}`);
-        newPutData = { ...postData, imgUrl: "" };
-      }
-
-      if (updateFile) {
-        if (newPutData.imgUrl) {
-          //기존 s3 이미지 삭제
-          const deleteS3Image = await fetch(`/api/delete/deleteImage?fileName=${postData.imgUrl}`);
-          setUpdateFileName("");
-          console.log(deleteS3Image.status);
-        }
-
-        // // Presigned URL 받아오기
-        const presignedUrl = await getS3PresignedURL(updateFile);
-
-        // S3 업로드
-        let s3UpladRes = await fetch(presignedUrl.url, {
-          method: "PUT",
-          body: updateFile,
-          headers: { "Content-Type": updateFile.type },
-        });
-        console.log(s3UpladRes);
-
-        if (s3UpladRes.ok) {
-          const s3FileUrl = `https://hellostory.s3.ap-northeast-2.amazonaws.com/${presignedUrl.fileName}`;
-          // setUpdateSrc(s3FileUrl);
-          // postData.content의 img 태그 src 변경
-          let parser = new DOMParser();
-          let doc = parser.parseFromString(postData.content, "text/html");
-          let imgTags = doc.getElementsByTagName("img");
-          if (imgTags.length > 0) {
-            // 첫 번째 img 태그의 src를 변경
-            imgTags[0].src = s3FileUrl;
-          }
-          let newHtml = doc.body.innerHTML;
-          // 작성되어있는 데이터의 복사본을 만들어서 api보내기
-          newPutData = { ...postData, content: newHtml, imgUrl: presignedUrl.fileName };
-          // setPostData((prev) => ({ ...prev, content: newHtml })); // 변경된 HTML을 저장
-          // console.log(newPutData);
-        } else {
-          console.log("s3Update 실패");
-        }
-      }
-
-      const response = await fetch("/api/edit/detailEdit", { method: "PUT", body: JSON.stringify(newPutData) });
-      if (response.status !== 200) {
-        const errorMessage = await response.json();
-        console.log("errorMessage", response.status, errorMessage);
-        if (postData.title === "") {
-          return alert("제목을 입력해 주세요");
-        }
-        if (postData.content === "") {
-          return alert("내용을 입력해 주세요");
-        }
-      }
-      if (response.status === 200) {
-        const success = await response.json();
-        const switchCategory = switchPostCategory(dropDownValue);
-        console.log(success);
-        router.push(`/${switchCategory}`);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
+  const handlePutApi = async () => {
+    if (originalPostData) {
+      await putApi({ originalPostData, postData, updateFile, setUpdateFileName, dropDownValue, router });
     }
   };
 
@@ -263,7 +191,7 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
         </div>
       </div>
       <div className="flex flex-row-reverse">
-        <Button bg="bg-orange" px="px-6" textSize="text-xs sm:text-sm md:text-base lg:text-lg" textColor="text-white" handler={putApi}>
+        <Button bg="bg-orange" px="px-6" textSize="text-xs sm:text-sm md:text-base lg:text-lg" textColor="text-white" handler={handlePutApi}>
           작성 완료
         </Button>
         <span className="mr-2">

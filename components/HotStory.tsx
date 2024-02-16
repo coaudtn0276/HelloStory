@@ -38,10 +38,10 @@ const HotStory: React.FC<HotStoryProps> = ({ data, containerTitle }) => {
 
   return (
     <div className="flex flex-col w-full h-full text-xs sm:text-sm md:text-base lg:text-lg">
-      <h2 className="my-2 font-b">
+      <p className="my-2 font-b">
         <span className="text-orange">{containerTitle} </span>
         story
-      </h2>
+      </p>
 
       <div className="flex flex-col border-y-2 border-gray-boxText mb-2">
         <div className="flex justify-between py-[2px] border-b-2 border-b-gray-boxText font-b text-center">

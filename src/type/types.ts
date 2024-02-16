@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { Dispatch, SetStateAction } from "react";
 
 export type ButtonType = {
@@ -33,7 +34,7 @@ export type DataType = {
 };
 
 export type PostDocument = DataType & {
-  _id: ObjectId;
+  _id: string;
 };
 
 export type HotStoryProps = {
@@ -81,4 +82,30 @@ export type ParamsType = {
 
 export type ModalProps = {
   checkHandler: () => void;
+  deleteHandler: () => void;
+};
+
+export type PostApiType = {
+  postData: DataType;
+  updateFile: File | null | undefined;
+  dropDownValue: string;
+  router: AppRouterInstance;
+};
+
+export type PutApiType = {
+  originalPostData: DataType;
+  postData: DataType;
+  updateFile: File | null | undefined;
+  setUpdateFileName: (name: string) => void;
+  dropDownValue: string;
+  router: AppRouterInstance;
+};
+
+export type DeleteApiType = {
+  getData: PostDocument | undefined;
+  router: AppRouterInstance;
+};
+
+export type DeleteSuccessType = {
+  handler: () => void;
 };

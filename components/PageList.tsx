@@ -72,10 +72,10 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
   return (
     <div className="flex flex-col w-full h-full text-xs sm:text-sm md:text-base lg:text-lg">
       <div className="flex justify-between">
-        <h2 className="my-2 font-b">
+        <p className="my-2 font-b">
           <span className="text-orange">{containerTitle} </span>
           story
-        </h2>
+        </p>
         <div className="flex items-center cursor-pointer" onClick={handleClickRiseFall}>
           <button>
             <Image src={menuIcon} alt="메뉴 아이콘" className="ml-3 w-3 sm:w-3 md:w-4 lg:w-5 h-3 sm:h-2 md:h-4 lg:h-5 mr-2" />
