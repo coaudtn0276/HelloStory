@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import { NextApiRequest, NextApiResponse } from "next";
+import { Session } from "next-auth";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { Dispatch, SetStateAction } from "react";
 
@@ -35,6 +36,10 @@ export type DataType = {
 
 export type PostDocument = DataType & {
   _id: string;
+};
+
+export type NavBarType = {
+  session: Session | null;
 };
 
 export type HotStoryProps = {

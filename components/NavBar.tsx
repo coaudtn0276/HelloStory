@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import Button from "./Button";
 import Image from "next/image";
 import { postImg, searchImg } from "@/public/image";
 
-const NavBar: React.FC = () => {
+import { useState } from "react";
+import { signIn, signOut } from "next-auth/react";
+import { NavBarType } from "@/src/type/types";
+
+const NavBar: React.FC<NavBarType> = ({ session }) => {
+  console.log(session);
   const [activeLink, setActiveLink] = useState("");
 
   const handleActiveClick = (path: string) => {
@@ -17,8 +21,27 @@ const NavBar: React.FC = () => {
     <div className="flex flex-col">
       <div className="flex flex-row-reverse pt-2 mr-2 font-b text-xs sm:text-sm md:text-base lg:text-lg ">
         <div>
-          <span className="mr-4 text-orange">로그인</span>
-          회원가입
+          {session ? (
+            <button
+              className="mr-4 text-orange"
+              onClick={() => {
+                signOut();
+              }}
+            >
+              로그아웃
+            </button>
+          ) : (
+            <button
+              className="mr-4 text-orange"
+              onClick={() => {
+                signIn();
+              }}
+            >
+              로그인
+            </button>
+          )}
+
+          <button>회원가입</button>
         </div>
       </div>
       <div className="flex items-center mb-2">
