@@ -1,4 +1,4 @@
-import { DeleteApiType, PostApiType, PresignedUrlResponse, PutApiType } from "../type/types";
+import { DeleteApiType, PostApiType, PresignedUrlResponse, PutApiType, RegisterApiType } from "../type/types";
 import { findImgTag, switchPostCategory } from "./function";
 
 export const getS3PresignedURL = async (file: File) => {
@@ -170,6 +170,35 @@ export const deleteApi = async ({ getData, router }: DeleteApiType) => {
       return result;
       // router.push(`/${getData?.category}`);
     }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
+export const registerApi = async ({ registerData }: RegisterApiType) => {
+  try {
+    const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+
+    if (registerData.name === "") {
+      return alert("이름이 빈칸 입니다.");
+    }
+    if (registerData.email === "" || !emailRegex.test(registerData.email)) {
+      return alert("유효한 이메일을 입력해주세요.");
+    }
+    if (registerData.password === "") {
+      return alert("비밀번호가 빈칸 입니다.");
+    }
+    const response = await fetch("/api/auth/signup", { method: "POST", body: JSON.stringify(registerData) });
+    const result = await response.json();
+
+    // console.log(response.status, result);
+    if (response.status === 409) {
+      return alert("이미 사용중인 이메일 입니다.");
+    }
+    if (response.status === 500) {
+      return alert("잠시 후 다시 시도 바랍니다.");
+    }
+    return response.status;
   } catch (error) {
     console.error("Error fetching data:", error);
   }

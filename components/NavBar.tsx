@@ -10,7 +10,6 @@ import { signIn, signOut } from "next-auth/react";
 import { NavBarType } from "@/src/type/types";
 
 const NavBar: React.FC<NavBarType> = ({ session }) => {
-  console.log(session);
   const [activeLink, setActiveLink] = useState("");
 
   const handleActiveClick = (path: string) => {
@@ -41,7 +40,7 @@ const NavBar: React.FC<NavBarType> = ({ session }) => {
             </button>
           )}
 
-          <button>회원가입</button>
+          <Link href={"/register"}>회원가입</Link>
         </div>
       </div>
       <div className="flex items-center mb-2">

@@ -114,3 +114,13 @@ export type DeleteApiType = {
 export type DeleteSuccessType = {
   handler: () => void;
 };
+
+export type RegisterDataType = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+export type RegisterApiType = {
+  registerData: RegisterDataType;
+};

@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
+  console.log(session);
 
   return (
     <html lang="ko" className="flex justify-center">
