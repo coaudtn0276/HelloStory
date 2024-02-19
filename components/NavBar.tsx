@@ -6,11 +6,12 @@ import Image from "next/image";
 import { postImg, searchImg } from "@/public/image";
 
 import { useState } from "react";
-import { signIn, signOut } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { NavBarType } from "@/src/type/types";
 
-const NavBar: React.FC<NavBarType> = ({ session }) => {
+const NavBar: React.FC<NavBarType> = () => {
   const [activeLink, setActiveLink] = useState("");
+  const session = useSession();
 
   const handleActiveClick = (path: string) => {
     setActiveLink(path);
@@ -20,7 +21,7 @@ const NavBar: React.FC<NavBarType> = ({ session }) => {
     <div className="flex flex-col">
       <div className="flex flex-row-reverse pt-2 mr-2 font-b text-xs sm:text-sm md:text-base lg:text-lg ">
         <div>
-          {session ? (
+          {session.data !== null ? (
             <button
               className="mr-4 text-orange"
               onClick={() => {

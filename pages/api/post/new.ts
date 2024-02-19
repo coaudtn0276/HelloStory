@@ -1,5 +1,7 @@
 import { ServerPropsType } from "@/src/type/types";
 import { connectDB } from "@/src/util/database";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]";
 
 const handler = async (...[req, res]: ServerPropsType) => {
   if (req.method === "POST") {
@@ -9,9 +11,12 @@ const handler = async (...[req, res]: ServerPropsType) => {
     try {
       const reqData = JSON.parse(req.body);
       const now = new Date();
+      const session = await getServerSession(req, res, authOptions);
+      // console.log(session);
 
       now.setHours(now.getHours() + 9);
       reqData.modificationDate = now.toISOString();
+      reqData.author = session.user.name;
 
       // console.log(reqData);
       const db = (await connectDB).db("hellostory");

@@ -14,6 +14,7 @@ import { photoIcon } from "@/public/image";
 import { DataType, PostDocument, itemIdProps } from "@/src/type/types";
 import { changeDate, switchCategory } from "@/src/util/function";
 import { deleteApi } from "@/src/util/api";
+import { useSession } from "next-auth/react";
 
 const ReactQuill = dynamic(
   async () => {
@@ -34,6 +35,9 @@ const Detail: React.FC<itemIdProps> = ({ params }) => {
   const [deleteValue, setDeleteValue] = useState();
 
   const router = useRouter();
+  const session = useSession();
+  const sessionName = session.data?.user?.name;
+  console.log(session.data?.user?.name);
 
   const handleDeleteApi = async () => {
     const deleteResponse = await deleteApi({ getData, router });
@@ -119,16 +123,18 @@ const Detail: React.FC<itemIdProps> = ({ params }) => {
             {/* <div dangerouslySetInnerHTML={{ __html: getData?.content }} /> */}
           </span>
         </div>
-        <div className="flex flex-row-reverse">
-          <Button bg="bg-red" px="px-5" textSize="text-xs sm:text-xs md:text-sm lg:text-base" textColor="text-white" handler={handleCheckModal}>
-            삭제하기
-          </Button>
-          <span className="mr-2 ">
-            <Button bg="bg-gray-primary" px="px-5" textSize="text-xs sm:text-xs md:text-sm lg:text-base" textColor="text-white" handler={handleEdit}>
-              수정하기
+        {sessionName === getData?.author || sessionName === "admin" ? (
+          <div className="flex flex-row-reverse">
+            <Button bg="bg-red" px="px-5" textSize="text-xs sm:text-xs md:text-sm lg:text-base" textColor="text-white" handler={handleCheckModal}>
+              삭제하기
             </Button>
-          </span>
-        </div>
+            <span className="mr-2 ">
+              <Button bg="bg-gray-primary" px="px-5" textSize="text-xs sm:text-xs md:text-sm lg:text-base" textColor="text-white" handler={handleEdit}>
+                수정하기
+              </Button>
+            </span>
+          </div>
+        ) : null}
       </div>
       {checkModal && <DeleteModal checkHandler={handleCheckModal} deleteHandler={handleDeleteApi} />}
       {deleteValue === "success" && <DeleteSuccessModal handler={handleSuccess} />}

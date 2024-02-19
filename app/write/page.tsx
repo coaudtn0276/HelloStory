@@ -8,7 +8,7 @@ import { DataType } from "@/src/type/types";
 import { switchPostCategory } from "@/src/util/function";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getS3PresignedURL, postApi } from "@/src/util/api";
+import { postApi } from "@/src/util/api";
 
 const ReactQuill = dynamic(
   async () => {

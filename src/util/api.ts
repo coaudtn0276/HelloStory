@@ -84,7 +84,7 @@ export const putApi = async ({ originalPostData, postData, updateFile, setUpdate
     const imgTag = findImgTag(newPutData.content);
 
     // 만약 content에서 img태그가 삭제됬거나 새로고쳐 졌을때
-    if (imgTag.length === 0) {
+    if (newPutData.imgUrl && imgTag.length === 0) {
       const deleteS3Image = await fetch(`/api/delete/deleteImage?fileName=${postData.imgUrl}`);
       newPutData = { ...postData, imgUrl: "" };
     }
@@ -175,7 +175,7 @@ export const deleteApi = async ({ getData, router }: DeleteApiType) => {
   }
 };
 
-export const registerApi = async ({ registerData }: RegisterApiType) => {
+export const registerApi = async ({ registerData, checkPassword }: RegisterApiType) => {
   try {
     const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
 
@@ -188,10 +188,17 @@ export const registerApi = async ({ registerData }: RegisterApiType) => {
     if (registerData.password === "") {
       return alert("비밀번호가 빈칸 입니다.");
     }
-    const response = await fetch("/api/auth/signup", { method: "POST", body: JSON.stringify(registerData) });
+    if (registerData.password !== checkPassword) {
+      return alert("비밀번호가 일치하지 않습니다.");
+    }
+
+    const response = await fetch("/api/auth/signup", { method: "POST", body: JSON.stringify({ ...registerData, checkPassword: checkPassword }) });
     const result = await response.json();
 
     // console.log(response.status, result);
+    if (response.status === 408) {
+      return alert("이미 사용중인 닉네임 입니다.");
+    }
     if (response.status === 409) {
       return alert("이미 사용중인 이메일 입니다.");
     }

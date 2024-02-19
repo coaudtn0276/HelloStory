@@ -1,6 +1,12 @@
 import { HotGallery, HotStory } from "@/components";
 import { PostDocument } from "@/src/type/types";
 import { connectDB } from "@/src/util/database";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Hello Stroy",
+  description: "Hello Stroy",
+};
 
 export default async function Home() {
   const db = (await connectDB).db("hellostory");

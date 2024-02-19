@@ -59,7 +59,20 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
           {el.imgUrl !== "" && <Image src={photoIcon} alt="사진 아이콘" className="ml-2 w-2 sm:w-2 md:w-3 lg:w-4" />}
         </div>
         <p style={{ flex: 1 }}>{changeModiDate}</p>
-        <p style={{ flex: 1 }}>{el.author}</p>
+        <div style={{ flex: 1 }}>
+          <div
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              wordWrap: "break-word",
+              display: "-webkit-box",
+              WebkitLineClamp: "1",
+              WebkitBoxOrient: "vertical",
+            }}
+          >
+            {el.author}
+          </div>
+        </div>
         <p style={{ flex: 1 }}>{el.views}</p>
       </Link>
     );

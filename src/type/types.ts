@@ -39,7 +39,7 @@ export type PostDocument = DataType & {
 };
 
 export type NavBarType = {
-  session: Session | null;
+  session?: Session | null;
 };
 
 export type HotStoryProps = {
@@ -123,4 +123,5 @@ export type RegisterDataType = {
 
 export type RegisterApiType = {
   registerData: RegisterDataType;
+  checkPassword: string;
 };

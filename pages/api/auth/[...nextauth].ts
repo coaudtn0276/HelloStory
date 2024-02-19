@@ -42,6 +42,10 @@ export const authOptions = {
       },
     }),
   ],
+  // /login페이지로 이동
+  // pages: {
+  //   signIn: "/login",
+  // },
 
   //3. jwt 써놔야 잘됩니다 + jwt 만료일설정
   session: {
