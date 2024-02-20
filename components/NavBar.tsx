@@ -118,10 +118,11 @@ const NavBar: React.FC<NavBarType> = () => {
               </span>
             </Button>
           </Link>
-
-          <Button bg="bg-gray-primary" px="px-4" textSize="text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs" textColor="text-white">
-            내가 쓴 글 보기
-          </Button>
+          <Link href={"/mypost"} className="mr-2">
+            <Button bg="bg-gray-primary" px="px-4" textSize="text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs" textColor="text-white">
+              내가 쓴 글 보기
+            </Button>
+          </Link>
         </div>
 
         <form action="submit" className="flex justify-between items-center w-7/12 h-8 px-2 border-2 border-gray-primary rounded-md">

@@ -10,15 +10,12 @@ const Register = () => {
   const [registerData, setRegisterData] = useState<RegisterDataType>({ name: "", email: "", password: "" });
   const [checkPassword, setCheckPassword] = useState("");
 
-  const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
-  // console.log(emailRegex.test(registerData.email));
-
   const router = useRouter();
 
   const handleClickRegister = async () => {
     const response = await registerApi({ registerData, checkPassword });
     if (response === 200) {
-      router.push("/");
+      router.push("/login");
     }
   };
 
@@ -29,7 +26,7 @@ const Register = () => {
 
   return (
     <div className="flex justify-center mt-40">
-      <div className="inline-flex flex-col p-10 border-[1px] border-[#c9c9c9] text-xs sm:text-sm md:text-base lg:text-lg">
+      <div className="inline-flex flex-col p-11 border-[1px] border-[#c9c9c9] text-xs sm:text-sm md:text-base lg:text-lg">
         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-b">회원 가입</h1>
         <div className="mb-4 font-b">
           <span className="text-orange">Hello Story</span>에 오신 여러분 환영합니다.
@@ -67,7 +64,7 @@ const Register = () => {
           <input
             type="password"
             name="password"
-            placeholder="비밀번호"
+            placeholder="비밀번호(영문 숫자 조합, 6자 이상 15자 이하)"
             value={registerData.password}
             className="w-64 sm:w-72 md:w-80 lg:w-96 py-2 pl-4 mb-2 border-[1px] border-[#c9c9c9] rounded-lg"
             onChange={(e) => {
@@ -95,9 +92,6 @@ const Register = () => {
           <Button bg="bg-orange border-[1px] border-orange" px="py-4 px-8" textSize="text-xs sm:text-sm md:text-base lg:text-lg" textColor="text-white" handler={handleClickRegister}>
             가입하기
           </Button>
-          {/* <button type="submit" onClick={handleClickRegister}>
-            id/pw 가입요청
-          </button> */}
         </div>
       </div>
     </div>

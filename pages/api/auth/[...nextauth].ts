@@ -1,7 +1,12 @@
 import NextAuth, { SessionStrategy } from "next-auth";
+
 import GithubProvider from "next-auth/providers/github";
+import KakaoProvider from "next-auth/providers/kakao";
+import NaverProvider from "next-auth/providers/naver";
 import CredentialsProvider from "next-auth/providers/credentials";
+
 import bcrypt from "bcrypt";
+
 import { connectDB } from "@/src/util/database";
 
 export const authOptions = {
@@ -9,6 +14,14 @@ export const authOptions = {
     GithubProvider({
       clientId: process.env.GIT_CLIENT_ID || "",
       clientSecret: process.env.GIT_Client_SECRET || "",
+    }),
+    KakaoProvider({
+      clientId: process.env.KAKAO_CLIENT_ID!,
+      clientSecret: process.env.KAKAO_CLIENT_SECRET!,
+    }),
+    NaverProvider({
+      clientId: process.env.NAVER_CLIENT_ID!,
+      clientSecret: process.env.NAVER_CLIENT_SECRET!,
     }),
 
     CredentialsProvider({
@@ -43,14 +56,14 @@ export const authOptions = {
     }),
   ],
   // /login페이지로 이동
-  // pages: {
-  //   signIn: "/login",
-  // },
+  pages: {
+    signIn: "/login",
+  },
 
   //3. jwt 써놔야 잘됩니다 + jwt 만료일설정
   session: {
     strategy: "jwt" as SessionStrategy,
-    maxAge: 30 * 24 * 60 * 60, //30일
+    maxAge: 24 * 60 * 60, //1일
   },
 
   callbacks: {

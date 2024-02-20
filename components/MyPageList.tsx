@@ -1,15 +1,16 @@
 "use client";
 
 import { menuIcon, photoIcon, searchImg } from "@/public/image";
-import { PageListProps } from "@/src/type/types";
+import { MyPageListProps } from "@/src/type/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Dropdown, Pagination } from ".";
-import { changeDate, switchPostCategory } from "@/src/util/function";
+import { Button, DeleteModal, DeleteSuccessModal, Dropdown, Pagination } from ".";
+import { changeDate } from "@/src/util/function";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
-  // console.log(data);
+const MyPageList: React.FC<MyPageListProps> = ({ data }) => {
+  console.log(data);
   // 전체 data중에서 최신 등록 순으로 정렬
   const [inputValue, setInputValue] = useState("");
   const [dataToUse, setDataUse] = useState(data);
@@ -20,8 +21,31 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
   const postsPerPage = 15;
   const offset = (currentPage - 1) * postsPerPage;
 
+  const [checkModal, setCheckModal] = useState(false);
+  const [deleteValue, setDeleteValue] = useState();
+
+  const router = useRouter();
+
   const handleClickRiseFall = () => {
     setRiseFallValue(!riseFallValue);
+  };
+
+  const handleEdit = (event: React.MouseEvent, itemId: string) => {
+    event.stopPropagation();
+    router.push(`/edit/${itemId}`);
+  };
+
+  const handleCheckModal = () => {
+    setCheckModal(!checkModal);
+  };
+
+  const handleDeleteApi = async () => {
+    // const deleteResponse = await deleteApi({ getData, router });
+    // setDeleteValue(deleteResponse);
+  };
+
+  const handleSuccess = () => {
+    // router.push(`/${getData?.category}`);
   };
 
   useEffect(() => {
@@ -36,13 +60,14 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
   const totalPosts = dataToUse.slice(offset, offset + postsPerPage).map((el, idx) => {
     const changeModiDate = changeDate(el.modificationDate);
     const stringItmeId = el._id.toString();
-    const switchCategory = switchPostCategory(containerTitle);
 
     return (
       // /detail/[itmeId]를 만들고 내부의 {...}stroy부분은 useEffect로 가져온 데이터의 category를 받아서 변경
       <Link href={`/detail/${stringItmeId}`} key={stringItmeId} className="flex justify-between py-[2px] font-l text-center border-b-[1px] border-b-[#bdbdbd]">
-        <p style={{ flex: 1 }}>{idx + 1}</p>
-        <div style={{ flex: 4 }} className="flex items-center text-left mr-4">
+        <p style={{ flex: 1 }} className="flex items-center justify-center">
+          {idx + 1}
+        </p>
+        <div style={{ flex: 3 }} className="flex items-center text-left mr-4">
           <div
             style={{
               overflow: "hidden",
@@ -57,22 +82,30 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
           </div>
           {el.imgUrl !== "" && <Image src={photoIcon} alt="사진 아이콘" className="ml-2 w-2 sm:w-2 md:w-3 lg:w-4" />}
         </div>
-        <p style={{ flex: 1 }}>{changeModiDate}</p>
-        <div style={{ flex: 1 }}>
-          <div
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              wordWrap: "break-word",
-              display: "-webkit-box",
-              WebkitLineClamp: "1",
-              WebkitBoxOrient: "vertical",
-            }}
-          >
-            {el.author}
+        <p style={{ flex: 1 }} className="flex items-center justify-center">
+          {changeModiDate}
+        </p>
+
+        <p style={{ flex: 1 }} className="flex items-center justify-center">
+          {el.views}
+        </p>
+        <div style={{ flex: 2 }}>
+          <div className="flex flex-row-reverse ">
+            <Button bg="bg-red" px="px-4" textSize="text-[8px] sm:text-[10px] md:text-[10px] lg:text-xs whitespace-nowrap" textColor="text-white" handler={handleCheckModal}>
+              삭제
+            </Button>
+            <div
+              className="mr-2"
+              onClick={(e) => {
+                handleEdit(e, el._id);
+              }}
+            >
+              <Button bg="bg-gray-primary" px="px-4" textSize="text-[8px] sm:text-[10px] md:text-[10px] lg:text-xs whitespace-nowrap" textColor="text-white">
+                수정
+              </Button>
+            </div>
           </div>
         </div>
-        <p style={{ flex: 1 }}>{el.views}</p>
       </Link>
     );
   });
@@ -85,7 +118,7 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
     <div className="flex flex-col w-full h-full text-xs sm:text-sm md:text-base lg:text-lg">
       <div className="flex justify-between">
         <p className="my-2 font-b">
-          <span className="text-orange">{containerTitle} </span>
+          <span className="text-orange">나의 </span>
           story
         </p>
         <div className="flex items-center cursor-pointer" onClick={handleClickRiseFall}>
@@ -99,12 +132,12 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
       <div className="flex flex-col border-y-2 border-gray-boxText mb-2">
         <div className="flex justify-between py-[2px] border-b-2 border-b-gray-boxText font-b text-center">
           <p style={{ flex: 1 }}>번호</p>
-          <p style={{ flex: 4 }} className="mr-4">
+          <p style={{ flex: 3 }} className="mr-4">
             제목
           </p>
           <p style={{ flex: 1 }}>게시일</p>
-          <p style={{ flex: 1 }}>글쓴이</p>
           <p style={{ flex: 1 }}>조회수</p>
+          <p style={{ flex: 2 }}></p>
         </div>
         <div className="flex flex-col border-b-gray-boxText font-b">{totalPosts}</div>
       </div>
@@ -132,8 +165,10 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
           </div>
         </span>
       </div>
+      {checkModal && <DeleteModal checkHandler={handleCheckModal} deleteHandler={handleDeleteApi} />}
+      {deleteValue === "success" && <DeleteSuccessModal handler={handleSuccess} />}
     </div>
   );
 };
 
-export default PageList;
+export default MyPageList;

@@ -9,3 +9,6 @@ export { default as photoIcon } from "./photoIcon.svg";
 export { default as menuIcon } from "./menuIcon.svg";
 export { default as importantIcon } from "./importantIcon.svg";
 export { default as successIcon } from "./successIcon.svg";
+export { default as githubIcon } from "./githubIcon.png";
+export { default as kakaoIcon } from "./kakaoIcon.png";
+export { default as naverIcon } from "./naverIcon.png";

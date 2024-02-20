@@ -178,6 +178,8 @@ export const deleteApi = async ({ getData, router }: DeleteApiType) => {
 export const registerApi = async ({ registerData, checkPassword }: RegisterApiType) => {
   try {
     const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,15}$/;
+    console.log(passwordPattern.test(registerData.password));
 
     if (registerData.name === "") {
       return alert("이름이 빈칸 입니다.");
@@ -185,8 +187,8 @@ export const registerApi = async ({ registerData, checkPassword }: RegisterApiTy
     if (registerData.email === "" || !emailRegex.test(registerData.email)) {
       return alert("유효한 이메일을 입력해주세요.");
     }
-    if (registerData.password === "") {
-      return alert("비밀번호가 빈칸 입니다.");
+    if (registerData.password === "" || !passwordPattern.test(registerData.password)) {
+      return alert("유효한 비밀번호를 입력해주세요.");
     }
     if (registerData.password !== checkPassword) {
       return alert("비밀번호가 일치하지 않습니다.");

@@ -7,5 +7,6 @@ export { default as HotGallery } from "./HotGallery";
 export { default as HotStory } from "./HotStory";
 export { default as Pagination } from "./Pagination";
 export { default as PageList } from "./PageList";
+export { default as MyPageList } from "./MyPageList";
 export { default as DeleteModal } from "./DeleteModal";
 export { default as DeleteSuccessModal } from "./DeleteSuccessModal";

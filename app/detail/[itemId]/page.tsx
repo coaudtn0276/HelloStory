@@ -37,7 +37,7 @@ const Detail: React.FC<itemIdProps> = ({ params }) => {
   const router = useRouter();
   const session = useSession();
   const sessionName = session.data?.user?.name;
-  console.log(session.data?.user?.name);
+  console.log(session);
 
   const handleDeleteApi = async () => {
     const deleteResponse = await deleteApi({ getData, router });
@@ -123,7 +123,7 @@ const Detail: React.FC<itemIdProps> = ({ params }) => {
             {/* <div dangerouslySetInnerHTML={{ __html: getData?.content }} /> */}
           </span>
         </div>
-        {sessionName === getData?.author || sessionName === "admin" ? (
+        {session.data === undefined || session.data === null ? null : sessionName === getData?.author || sessionName === "admin" ? (
           <div className="flex flex-row-reverse">
             <Button bg="bg-red" px="px-5" textSize="text-xs sm:text-xs md:text-sm lg:text-base" textColor="text-white" handler={handleCheckModal}>
               삭제하기

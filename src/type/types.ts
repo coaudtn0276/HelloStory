@@ -47,6 +47,10 @@ export type HotStoryProps = {
   containerTitle: string;
 };
 
+export type MyPageListProps = {
+  data: PostDocument[];
+};
+
 export type PageListProps = {
   data: PostDocument[];
   containerTitle: string;
