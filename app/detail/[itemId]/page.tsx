@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 
-import { Button, DeleteModal, DeleteSuccessModal } from "@/components";
+import { Button, CommentList, DeleteModal, DeleteSuccessModal } from "@/components";
 import { photoIcon } from "@/public/image";
 
 import { DataType, PostDocument, itemIdProps } from "@/src/type/types";
@@ -29,7 +29,7 @@ const ReactQuill = dynamic(
 const Detail: React.FC<itemIdProps> = ({ params }) => {
   const [getData, setGetdata] = useState<PostDocument>();
   const [changeModiDate, setChangeModiDate] = useState<String>();
-  console.log(getData);
+  // console.log(getData);
   const [categoryValue, setCategoryValue] = useState<"게임" | "반려동물" | "잡담" | "맛집">();
   const [checkModal, setCheckModal] = useState(false);
   const [deleteValue, setDeleteValue] = useState();
@@ -40,7 +40,7 @@ const Detail: React.FC<itemIdProps> = ({ params }) => {
   console.log(session);
 
   const handleDeleteApi = async () => {
-    const deleteResponse = await deleteApi({ getData, router });
+    const deleteResponse = await deleteApi({ getData });
     setDeleteValue(deleteResponse);
   };
 
@@ -136,6 +136,7 @@ const Detail: React.FC<itemIdProps> = ({ params }) => {
           </div>
         ) : null}
       </div>
+      <CommentList itemId={params.itemId} />
       {checkModal && <DeleteModal checkHandler={handleCheckModal} deleteHandler={handleDeleteApi} />}
       {deleteValue === "success" && <DeleteSuccessModal handler={handleSuccess} />}
     </div>

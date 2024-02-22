@@ -1,4 +1,4 @@
-import { DeleteApiType, PostApiType, PresignedUrlResponse, PutApiType, RegisterApiType } from "../type/types";
+import { CommentValueType, DeleteApiType, PostApiType, PresignedUrlResponse, PutApiType, RegisterApiType } from "../type/types";
 import { findImgTag, switchPostCategory } from "./function";
 
 export const getS3PresignedURL = async (file: File) => {
@@ -151,7 +151,7 @@ export const putApi = async ({ originalPostData, postData, updateFile, setUpdate
   }
 };
 
-export const deleteApi = async ({ getData, router }: DeleteApiType) => {
+export const deleteApi = async ({ getData }: DeleteApiType) => {
   try {
     if (getData?.imgUrl) {
       const deleteS3Image = await fetch(`/api/delete/deleteImage?fileName=${getData.imgUrl}`);
@@ -168,7 +168,6 @@ export const deleteApi = async ({ getData, router }: DeleteApiType) => {
       const result = await response.json();
       console.log(result);
       return result;
-      // router.push(`/${getData?.category}`);
     }
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -208,6 +207,41 @@ export const registerApi = async ({ registerData, checkPassword }: RegisterApiTy
       return alert("잠시 후 다시 시도 바랍니다.");
     }
     return response.status;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
+export const postCommentApi = async ({ commentValue, itemId }: CommentValueType) => {
+  try {
+    if (commentValue.author === "") {
+      return alert("닉네임을 입력해주세요.");
+    }
+    if (commentValue.password === "") {
+      return alert("비밀번호를 입력해주세요.");
+    }
+    if (commentValue.comment === "") {
+      return alert("댓글을 입력해주세요.");
+    }
+    console.log({ commentValue, itmeId: itemId });
+
+    const response = await fetch("/api/comment/new", { method: "POST", body: JSON.stringify({ commentValue, itmeId: itemId }) });
+    const resJson = await response.json();
+    const resStatus = await response.status;
+
+    return { resStatus: resStatus, resJson: resJson };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
+export const getCommentApi = async (itemId: string) => {
+  try {
+    const response = await fetch(`/api/comment/list?itemId=${itemId}`);
+    const resJson = await response.json();
+    const resStatus = await response.status;
+
+    return { resStatus: resStatus, resJson: resJson };
   } catch (error) {
     console.error("Error fetching data:", error);
   }

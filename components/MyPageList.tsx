@@ -1,13 +1,14 @@
 "use client";
 
 import { menuIcon, photoIcon, searchImg } from "@/public/image";
-import { MyPageListProps } from "@/src/type/types";
+import { MyPageListProps, PostDocument } from "@/src/type/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Button, DeleteModal, DeleteSuccessModal, Dropdown, Pagination } from ".";
 import { changeDate } from "@/src/util/function";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { deleteApi } from "@/src/util/api";
 
 const MyPageList: React.FC<MyPageListProps> = ({ data }) => {
   console.log(data);
@@ -22,7 +23,8 @@ const MyPageList: React.FC<MyPageListProps> = ({ data }) => {
   const offset = (currentPage - 1) * postsPerPage;
 
   const [checkModal, setCheckModal] = useState(false);
-  const [deleteValue, setDeleteValue] = useState();
+  const [deleteValue, setDeleteValue] = useState<"success" | "">();
+  const [deleteData, setDeleteData] = useState<PostDocument>();
 
   const router = useRouter();
 
@@ -31,21 +33,23 @@ const MyPageList: React.FC<MyPageListProps> = ({ data }) => {
   };
 
   const handleEdit = (event: React.MouseEvent, itemId: string) => {
-    event.stopPropagation();
+    event.preventDefault();
     router.push(`/edit/${itemId}`);
   };
 
-  const handleCheckModal = () => {
+  const handleCheckModal = (event: React.MouseEvent) => {
+    event.preventDefault();
     setCheckModal(!checkModal);
   };
 
   const handleDeleteApi = async () => {
-    // const deleteResponse = await deleteApi({ getData, router });
-    // setDeleteValue(deleteResponse);
+    const deleteResponse = await deleteApi({ getData: deleteData });
+    setDeleteValue(deleteResponse);
   };
 
   const handleSuccess = () => {
-    // router.push(`/${getData?.category}`);
+    router.refresh();
+    setDeleteValue("");
   };
 
   useEffect(() => {
@@ -90,10 +94,18 @@ const MyPageList: React.FC<MyPageListProps> = ({ data }) => {
           {el.views}
         </p>
         <div style={{ flex: 2 }}>
-          <div className="flex flex-row-reverse ">
-            <Button bg="bg-red" px="px-4" textSize="text-[8px] sm:text-[10px] md:text-[10px] lg:text-xs whitespace-nowrap" textColor="text-white" handler={handleCheckModal}>
-              삭제
-            </Button>
+          <div className="flex flex-row-reverse justify-center">
+            <div
+              onClick={(e) => {
+                handleCheckModal(e);
+                // console.log(el);
+                setDeleteData(el);
+              }}
+            >
+              <Button bg="bg-red" px="px-4" textSize="text-[8px] sm:text-[10px] md:text-[10px] lg:text-xs whitespace-nowrap" textColor="text-white">
+                삭제
+              </Button>
+            </div>
             <div
               className="mr-2"
               onClick={(e) => {

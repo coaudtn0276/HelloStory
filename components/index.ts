@@ -10,3 +10,4 @@ export { default as PageList } from "./PageList";
 export { default as MyPageList } from "./MyPageList";
 export { default as DeleteModal } from "./DeleteModal";
 export { default as DeleteSuccessModal } from "./DeleteSuccessModal";
+export { default as CommentList } from "./CommentList";

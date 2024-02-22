@@ -90,7 +90,7 @@ export type ParamsType = {
 };
 
 export type ModalProps = {
-  checkHandler: () => void;
+  checkHandler: (e: React.MouseEvent) => void;
   deleteHandler: () => void;
 };
 
@@ -112,7 +112,6 @@ export type PutApiType = {
 
 export type DeleteApiType = {
   getData: PostDocument | undefined;
-  router: AppRouterInstance;
 };
 
 export type DeleteSuccessType = {
@@ -125,7 +124,29 @@ export type RegisterDataType = {
   password: string;
 };
 
+export type CommentListType = {
+  itemId: string;
+};
+
 export type RegisterApiType = {
   registerData: RegisterDataType;
   checkPassword: string;
+};
+
+export type CommentValueType = {
+  commentValue: {
+    author: string;
+    password: string;
+    comment: string;
+  };
+  itemId: string;
+};
+
+export type CommentDataType = {
+  author: string;
+  comment: string;
+  modificationDate: string;
+  parent: string;
+  password: string;
+  _id: string;
 };

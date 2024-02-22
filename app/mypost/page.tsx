@@ -6,7 +6,6 @@ import { getServerSession } from "next-auth";
 
 const MyPost = async () => {
   const session = await getServerSession(authOptions);
-  console.log(session);
   const db = (await connectDB).db("hellostory");
   let data = await db.collection<PostDocument>("post").find({ author: session.user.name }).sort({ _id: -1 }).toArray();
 
