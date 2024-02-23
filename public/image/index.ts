@@ -12,3 +12,4 @@ export { default as successIcon } from "./successIcon.svg";
 export { default as githubIcon } from "./githubIcon.png";
 export { default as kakaoIcon } from "./kakaoIcon.png";
 export { default as naverIcon } from "./naverIcon.png";
+export { default as cancelIcon } from "./cancelIcon.svg";

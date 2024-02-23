@@ -1,54 +1,137 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from ".";
-import { getCommentApi, postCommentApi } from "@/src/util/api";
-import { CommentDataType, CommentListType } from "@/src/type/types";
+import { Button, ChildCommentList } from ".";
+import { commentDeleteApi, getCommentApi, postCommentApi } from "@/src/util/api";
+import { CommentDataType, CommentListType, ChildCommentDataType } from "@/src/type/types";
 import { changeDate } from "@/src/util/function";
+import Image from "next/image";
+import { cancelIcon } from "@/public/image";
 
 const CommentList: React.FC<CommentListType> = ({ itemId }) => {
   const [commentValue, setCommentValue] = useState({ author: "", password: "", comment: "" });
-  const [getData, setGetDate] = useState<CommentDataType[]>();
+  const [getParentData, setGetParentData] = useState<CommentDataType[]>();
+  const [getChildData, setChildData] = useState<ChildCommentDataType[]>();
+
+  const [selectId, setSelectId] = useState("");
+  const [deleteCommentPw, setDeleteCommentPw] = useState("");
 
   const handlePostComment = async () => {
     const response = await postCommentApi({ commentValue, itemId });
-    console.log(response);
     if (response && response.resStatus === 200) {
-      getCommentApi(itemId).then((res) => {
-        setGetDate(JSON.parse(res?.resJson));
-        setCommentValue({ author: "", password: "", comment: "" });
-      });
+      setGetParentData((prevGetData) => [...(prevGetData ?? []), response.resJson]);
+      setCommentValue({ author: "", password: "", comment: "" });
     }
+  };
+
+  const handleCommentDelete = async (itemId: string, commnetPw: string) => {
+    const response = await commentDeleteApi(itemId, commnetPw);
+    console.log(response);
+    if (response?.resStatus === 403) {
+      return alert("비밀번호가 틀립니다.");
+    }
+    setSelectId("");
+    setDeleteCommentPw("");
+    setGetParentData((prevGetData) => prevGetData?.filter((item) => item._id !== itemId));
+
+    return alert("삭제 되었습니다.");
+  };
+
+  const handleDeleteCancel = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectId("");
+    setDeleteCommentPw("");
+  };
+
+  const findChildCommnet = (parentId: string) => {
+    const childData = getChildData?.filter((item) => {
+      return item.parent === parentId;
+    });
+
+    return childData?.length;
+  };
+
+  const filterChildData = (childData: ChildCommentDataType[], parentId: string) => {
+    const data = childData.filter((item) => {
+      return item.parent === parentId;
+    });
+    return data;
   };
 
   useEffect(() => {
     getCommentApi(itemId).then((res) => {
-      setGetDate(JSON.parse(res?.resJson));
+      const resParse = JSON.parse(res?.resJson);
+      setGetParentData(resParse.parentArray);
+      setChildData(resParse.childArray);
     });
-    // console.log(response)
   }, [itemId]);
 
   return (
     <div className="flex flex-col text-xs sm:text-xs md:text-sm lg:text-base">
-      <div className={`flex ${getData && "border-b-2 border-gray-boxText"}`}>
+      <div className={`flex ${getParentData && "border-b-2 border-gray-boxText"}`}>
         <p className="my-2 font-b">댓글</p>
         {/* 댓글 몇개 있는지 보여줄 자리 */}
       </div>
 
       {/* 댓글 보여줄 자리, 새로운 테이블을  props로 내려줘서 넣기 */}
-      {getData &&
-        getData.map((el, idx) => {
-          return (
-            <div key={el._id} className="flex justify-between items-center">
-              <div style={{ flex: 1 }}>{getData[idx].author}</div>
-              <div style={{ flex: 4 }}>{getData[idx].comment}</div>
-              <div style={{ flex: 1 }} className="flex justify-between">
-                <div> {changeDate(getData[idx].modificationDate)} </div>
-                <button>x</button>
+      {getParentData && (
+        <div className="mb-6">
+          {getParentData.map((el, idx) => {
+            return (
+              <div key={el._id} className="flex flex-col py-2 border-b-[1px] border-gray-box">
+                <div className="flex justify-between">
+                  <div style={{ flex: 1 }}>{getParentData[idx].author}</div>
+                  <div style={{ flex: 3 }} className="pr-2">
+                    {getParentData[idx].comment}
+                  </div>
+                  <div
+                    style={{ flex: 1 }}
+                    className="flex justify-between"
+                    onClick={() => {
+                      setSelectId(el._id);
+                    }}
+                  >
+                    <div> {changeDate(getParentData[idx].modificationDate)} </div>
+                    <button className="relative">
+                      <Image src={cancelIcon} alt="cancel" className="w-3 sm:w-3 md:w-4 lg:w-5" />
+                      {selectId === el._id ? (
+                        <div className="absolute right-7 top-0 flex justify-between border-[1px] border-gray-orane w-36  bg-gray-box">
+                          <input
+                            type="password"
+                            className="w-6/12"
+                            value={deleteCommentPw}
+                            onChange={(e) => {
+                              setDeleteCommentPw(e.target.value);
+                            }}
+                          />
+                          <button
+                            className="text-ellipsis break-words flex justify-center items-center text-white font-b"
+                            onClick={() => {
+                              if (deleteCommentPw) {
+                                handleCommentDelete(el._id, deleteCommentPw);
+                              }
+                            }}
+                          >
+                            확인
+                          </button>
+                          <Image
+                            src={cancelIcon}
+                            alt="cancel"
+                            onClick={(e) => {
+                              handleDeleteCancel(e);
+                            }}
+                          />
+                        </div>
+                      ) : null}
+                    </button>
+                  </div>
+                </div>
+                {findChildCommnet(el._id) ? <ChildCommentList childData={filterChildData(getChildData ?? [], el._id)} /> : null}
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+      )}
 
       <div className="flex justify-between p-2 border-y-2 border-gray-boxText bg-[#F9F9F9]">
         <div className="flex flex-col w-1/6 mr-2">

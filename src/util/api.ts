@@ -246,3 +246,16 @@ export const getCommentApi = async (itemId: string) => {
     console.error("Error fetching data:", error);
   }
 };
+
+export const commentDeleteApi = async (itemId: string, commentPw: string) => {
+  try {
+    const response = await fetch("/api/comment/delete", { method: "DELETE", body: JSON.stringify({ itemId: itemId, commentPw: commentPw }) });
+
+    const resJson = await response.json();
+    const resStatus = await response.status;
+
+    return { resStatus: resStatus, resJson: resJson };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};

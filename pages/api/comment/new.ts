@@ -41,7 +41,7 @@ const handler = async (...[req, res]: ServerPropsType) => {
 
       const db = (await connectDB).db("hellostory");
       const result = db.collection("comment").insertOne(commentValue);
-      return res.status(200).json("댓글저장 완료");
+      return res.status(200).json(commentValue);
     }
   } catch (error) {
     return res.status(500).json({ error: "mongoDB 오류" });

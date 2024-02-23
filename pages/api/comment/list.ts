@@ -9,12 +9,19 @@ const handler = async (...[req, res]: ServerPropsType) => {
       //   console.log(itmeId);
 
       const db = (await connectDB).db("hellostory");
-      const result = await db
+      const findParentArray = await db
         .collection("comment")
         .find({ parent: new ObjectId(itmeId) })
         .toArray();
 
-      return res.status(200).json(JSON.stringify(result));
+      const findChildArray = await db
+        .collection("comment")
+        .find({ grand_parent: new ObjectId(itmeId) })
+        .toArray();
+
+      console.log(findChildArray);
+
+      return res.status(200).json(JSON.stringify({ parentArray: findParentArray, childArray: findChildArray }));
     } catch (error) {
       return res.status(500).json({ error: "mongoDB 오류" });
     }

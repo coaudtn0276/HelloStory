@@ -150,3 +150,11 @@ export type CommentDataType = {
   password: string;
   _id: string;
 };
+
+export type ChildCommentDataType = CommentDataType & {
+  grand_parent: string;
+};
+
+export type ChildCommentListType = {
+  childData: ChildCommentDataType[];
+};
