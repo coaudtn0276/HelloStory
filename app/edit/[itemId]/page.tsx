@@ -8,7 +8,7 @@ import { DataType, itemIdProps } from "@/src/type/types";
 import { findImgTag, switchCategory, switchPostCategory } from "@/src/util/function";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getS3PresignedURL, putApi } from "@/src/util/api";
+import { putApi } from "@/src/util/api";
 
 const ReactQuill = dynamic(
   async () => {

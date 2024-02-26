@@ -6,11 +6,12 @@ const handler = async (...[req, res]: ServerPropsType) => {
   if (req.method === "GET") {
     try {
       const itemId = req.query.itemId;
-      // console.log(itemId?.toString());
-      // return res.status(200).json("요청성공");
 
       const db = (await connectDB).db("hellostory");
       const result = await db.collection("post").findOne({ _id: new ObjectId(itemId?.toString()) });
+      await db.collection("post").updateOne({ _id: new ObjectId(itemId?.toString()) }, { $inc: { views: 1 } });
+
+      console.log(result);
 
       return res.status(200).json(JSON.stringify(result));
     } catch (error) {

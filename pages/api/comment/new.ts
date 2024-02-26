@@ -14,7 +14,7 @@ const handler = async (...[req, res]: ServerPropsType) => {
       const reqData = JSON.parse(req.body);
       const { commentValue } = reqData;
       const session = await getServerSession(req, res, authOptions);
-      //   console.log(session);
+      console.log(reqData);
 
       if (commentValue.author === "") {
         return res.status(400).json("닉네임 공백");
@@ -36,6 +36,9 @@ const handler = async (...[req, res]: ServerPropsType) => {
       commentValue.modificationDate = now.toISOString();
       commentValue.parent = new ObjectId(reqData.itmeId);
       commentValue.password = hash;
+      if (reqData.grandParentId) {
+        commentValue.grandParentId = new ObjectId(reqData.grandParentId);
+      }
 
       console.log(commentValue);
 

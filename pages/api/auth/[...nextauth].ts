@@ -63,7 +63,7 @@ export const authOptions = {
   //3. jwt 써놔야 잘됩니다 + jwt 만료일설정
   session: {
     strategy: "jwt" as SessionStrategy,
-    maxAge: 24 * 60 * 60, //1일
+    maxAge: 30 * 24 * 60 * 60, //30일
   },
 
   callbacks: {

@@ -212,7 +212,7 @@ export const registerApi = async ({ registerData, checkPassword }: RegisterApiTy
   }
 };
 
-export const postCommentApi = async ({ commentValue, itemId }: CommentValueType) => {
+export const postCommentApi = async ({ commentValue, itemId, grandParentId }: CommentValueType) => {
   try {
     if (commentValue.author === "") {
       return alert("닉네임을 입력해주세요.");
@@ -223,9 +223,9 @@ export const postCommentApi = async ({ commentValue, itemId }: CommentValueType)
     if (commentValue.comment === "") {
       return alert("댓글을 입력해주세요.");
     }
-    console.log({ commentValue, itmeId: itemId });
+    // console.log({ commentValue, itmeId: itemId });
 
-    const response = await fetch("/api/comment/new", { method: "POST", body: JSON.stringify({ commentValue, itmeId: itemId }) });
+    const response = await fetch("/api/comment/new", { method: "POST", body: JSON.stringify({ commentValue, itmeId: itemId, grandParentId: grandParentId }) });
     const resJson = await response.json();
     const resStatus = await response.status;
 

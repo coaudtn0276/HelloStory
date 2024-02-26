@@ -1,6 +1,7 @@
+import { MyPageListProps } from "@/src/type/types";
 import CarouselItemsSlick from "./CarouselItemsSlick";
 
-const HotGallery = () => {
+const HotGallery: React.FC<MyPageListProps> = ({ data }) => {
   return (
     <div className="mb-4">
       {/* Link태그 넣어주기 */}
@@ -9,7 +10,7 @@ const HotGallery = () => {
         gallery
       </h2>
       <span className="flex justify-center">
-        <CarouselItemsSlick />
+        <CarouselItemsSlick data={data} />
       </span>
     </div>
   );

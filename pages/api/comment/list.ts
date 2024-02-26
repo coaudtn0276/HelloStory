@@ -16,10 +16,10 @@ const handler = async (...[req, res]: ServerPropsType) => {
 
       const findChildArray = await db
         .collection("comment")
-        .find({ grand_parent: new ObjectId(itmeId) })
+        .find({ grandParentId: new ObjectId(itmeId) })
         .toArray();
 
-      console.log(findChildArray);
+      // console.log(findChildArray);
 
       return res.status(200).json(JSON.stringify({ parentArray: findParentArray, childArray: findChildArray }));
     } catch (error) {

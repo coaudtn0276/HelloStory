@@ -13,7 +13,7 @@ const handler = async (...[req, res]: ServerPropsType) => {
 
   const session = await getServerSession(req, res, authOptions);
 
-  console.log("findData", result);
+  // console.log("findData", result);
   if (req.method === "PUT") {
     if (content === result?.content) {
       return res.status(400).json("내용수정이 없습니다.");

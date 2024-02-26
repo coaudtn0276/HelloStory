@@ -7,6 +7,7 @@ import { CommentDataType, CommentListType, ChildCommentDataType } from "@/src/ty
 import { changeDate } from "@/src/util/function";
 import Image from "next/image";
 import { cancelIcon } from "@/public/image";
+import { useSession } from "next-auth/react";
 
 const CommentList: React.FC<CommentListType> = ({ itemId }) => {
   const [commentValue, setCommentValue] = useState({ author: "", password: "", comment: "" });
@@ -14,7 +15,12 @@ const CommentList: React.FC<CommentListType> = ({ itemId }) => {
   const [getChildData, setChildData] = useState<ChildCommentDataType[]>();
 
   const [selectId, setSelectId] = useState("");
+  const [selectedModalId, setSelectedModalId] = useState("");
+  // console.log(selectedModalId);
   const [deleteCommentPw, setDeleteCommentPw] = useState("");
+
+  const session = useSession();
+  // console.log(session);
 
   const handlePostComment = async () => {
     const response = await postCommentApi({ commentValue, itemId });
@@ -43,13 +49,21 @@ const CommentList: React.FC<CommentListType> = ({ itemId }) => {
     setDeleteCommentPw("");
   };
 
-  const findChildCommnet = (parentId: string) => {
-    const childData = getChildData?.filter((item) => {
-      return item.parent === parentId;
-    });
-
-    return childData?.length;
+  const handleShowChildModal = (id: string) => {
+    if (selectedModalId === id) {
+      setSelectedModalId(""); // 이미 선택된 comment를 다시 클릭하면 모달을 닫습니다.
+    } else {
+      setSelectedModalId(id); // 다른 comment를 클릭하면 해당 comment의 모달을 엽니다.
+    }
   };
+
+  // const findChildCommnet = (parentId: string) => {
+  //   const childData = getChildData?.filter((item) => {
+  //     return item.parent === parentId;
+  //   });
+
+  //   return childData?.length;
+  // };
 
   const filterChildData = (childData: ChildCommentDataType[], parentId: string) => {
     const data = childData.filter((item) => {
@@ -66,34 +80,47 @@ const CommentList: React.FC<CommentListType> = ({ itemId }) => {
     });
   }, [itemId]);
 
+  useEffect(() => {
+    if (session) {
+      setCommentValue((prevCommentValue) => ({ ...prevCommentValue, author: session.data?.user?.name || "" }));
+    }
+  }, [session]);
+
   return (
     <div className="flex flex-col text-xs sm:text-xs md:text-sm lg:text-base">
-      <div className={`flex ${getParentData && "border-b-2 border-gray-boxText"}`}>
+      <div className={`flex ${getParentData?.length === 0 ? null : "border-b-2 border-gray-boxText"}`}>
         <p className="my-2 font-b">댓글</p>
         {/* 댓글 몇개 있는지 보여줄 자리 */}
       </div>
 
       {/* 댓글 보여줄 자리, 새로운 테이블을  props로 내려줘서 넣기 */}
       {getParentData && (
-        <div className="mb-6">
+        <div className={`${getParentData.length === 0 ? null : "mb-6"}`}>
           {getParentData.map((el, idx) => {
             return (
               <div key={el._id} className="flex flex-col py-2 border-b-[1px] border-gray-box">
                 <div className="flex justify-between">
                   <div style={{ flex: 1 }}>{getParentData[idx].author}</div>
-                  <div style={{ flex: 3 }} className="pr-2">
-                    {getParentData[idx].comment}
-                  </div>
                   <div
-                    style={{ flex: 1 }}
-                    className="flex justify-between"
+                    style={{ flex: 3 }}
+                    className="pr-2"
                     onClick={() => {
-                      setSelectId(el._id);
+                      handleShowChildModal(el._id);
                     }}
                   >
+                    {getParentData[idx].comment}
+                  </div>
+                  <div style={{ flex: 1 }} className="flex justify-between">
                     <div> {changeDate(getParentData[idx].modificationDate)} </div>
                     <button className="relative">
-                      <Image src={cancelIcon} alt="cancel" className="w-3 sm:w-3 md:w-4 lg:w-5" />
+                      <Image
+                        src={cancelIcon}
+                        alt="cancel"
+                        className="w-3 sm:w-3 md:w-4 lg:w-5"
+                        onClick={() => {
+                          setSelectId(el._id);
+                        }}
+                      />
                       {selectId === el._id ? (
                         <div className="absolute right-7 top-0 flex justify-between border-[1px] border-gray-orane w-36  bg-gray-box">
                           <input
@@ -126,7 +153,8 @@ const CommentList: React.FC<CommentListType> = ({ itemId }) => {
                     </button>
                   </div>
                 </div>
-                {findChildCommnet(el._id) ? <ChildCommentList childData={filterChildData(getChildData ?? [], el._id)} /> : null}
+
+                <ChildCommentList childData={filterChildData(getChildData ?? [], el._id)} grandParentId={itemId} parentId={el._id} selectModalId={selectedModalId} />
               </div>
             );
           })}
@@ -139,14 +167,14 @@ const CommentList: React.FC<CommentListType> = ({ itemId }) => {
             type="text"
             className="border-[1px] w-full pl-2 py-1 mb-2"
             placeholder="닉네임"
-            value={commentValue.author}
+            value={session ? session.data?.user?.name || "" : commentValue.author}
             onChange={(e) => {
               setCommentValue((prevCommentValue) => ({ ...prevCommentValue, author: e.target.value }));
             }}
           />
           <input
             type="password"
-            className="border-[1px] w-ful pl-2 py-1 "
+            className="border-[1px] w-ful pl-2 py-1"
             placeholder="비밀번호"
             value={commentValue.password}
             onChange={(e) => {

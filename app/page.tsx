@@ -11,18 +11,23 @@ export const metadata: Metadata = {
 export default async function Home() {
   const db = (await connectDB).db("hellostory");
   // data props로 내려줄때 각 컴포넌트에 맞는 데이터 filter해서 내려주기
-  let data = await db.collection<PostDocument>("post").find().toArray();
+  let topViewsData = await db.collection<PostDocument>("post").find().sort({ views: -1 }).toArray();
+  let realTimeData = await db.collection<PostDocument>("post").find().sort({ modificationDate: -1 }).toArray();
+  let findImageUrl = await db
+    .collection<PostDocument>("post")
+    .find({ imgUrl: { $exists: true, $ne: "" } })
+    .toArray();
 
-  data = JSON.parse(JSON.stringify(data));
-
-  // console.log("result", result);
-  // console.log("data", data);
+  topViewsData = JSON.parse(JSON.stringify(topViewsData));
+  realTimeData = JSON.parse(JSON.stringify(realTimeData));
+  findImageUrl = JSON.parse(JSON.stringify(findImageUrl));
+  // console.log(findImageUrl);
 
   return (
     <div>
-      <HotGallery />
-      <HotStory data={data} containerTitle="지금 뜨는" />
-      <HotStory data={data} containerTitle="실시간" />
+      <HotGallery data={findImageUrl} />
+      <HotStory data={topViewsData} containerTitle="지금 뜨는" />
+      <HotStory data={realTimeData} containerTitle="실시간" />
       {/* 메인페이지 */}
     </div>
   );

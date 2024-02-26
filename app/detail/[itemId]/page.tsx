@@ -37,7 +37,6 @@ const Detail: React.FC<itemIdProps> = ({ params }) => {
   const router = useRouter();
   const session = useSession();
   const sessionName = session.data?.user?.name;
-  console.log(session);
 
   const handleDeleteApi = async () => {
     const deleteResponse = await deleteApi({ getData });

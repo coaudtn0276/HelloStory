@@ -5,12 +5,12 @@ import "slick-carousel/slick/slick-theme.css";
 
 import styled from "styled-components";
 
-import { testImg1, testImg2, testImg3, testImg4, testImg5 } from "@/public/testImg";
-
 import Slider from "react-slick";
 import LeftArrow from "@/public/image/LeftArrow";
 import { RightArrow } from "@/public/image";
 import { useState } from "react";
+import { MyPageListProps } from "@/src/type/types";
+import Link from "next/link";
 
 const StyledSlider = styled(Slider)`
   width: 100%;
@@ -39,7 +39,7 @@ const NextTo = styled.div`
   z-index: 3;
 `;
 
-const CarouselItemsSlick: React.FC = () => {
+const CarouselItemsSlick: React.FC<MyPageListProps> = ({ data }) => {
   const [arrowColor, setArrowColor] = useState("");
 
   const handleArrowColor = (path: "right" | "left") => {
@@ -105,16 +105,14 @@ const CarouselItemsSlick: React.FC = () => {
     ],
   };
 
-  const testImgs = [testImg1, testImg2, testImg3, testImg4, testImg5];
-
   return (
     <div className="w-10/12">
       <StyledSlider {...settings}>
-        {testImgs.map((el, idx) => {
+        {data.map((el) => {
           return (
-            <div key={idx} className="w-28 h-28 ">
-              <img src={el.src} className="w-full h-full object-cover" />
-            </div>
+            <Link key={el._id} href={`/detail/${el._id}`} className="w-28 h-28 ">
+              <img src={`https://hellostory.s3.ap-northeast-2.amazonaws.com/${el.imgUrl}`} className="w-full h-full object-cover" />
+            </Link>
           );
         })}
       </StyledSlider>

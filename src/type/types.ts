@@ -140,6 +140,7 @@ export type CommentValueType = {
     comment: string;
   };
   itemId: string;
+  grandParentId?: string;
 };
 
 export type CommentDataType = {
@@ -157,4 +158,7 @@ export type ChildCommentDataType = CommentDataType & {
 
 export type ChildCommentListType = {
   childData: ChildCommentDataType[];
+  grandParentId: string;
+  parentId: string;
+  selectModalId: string;
 };
