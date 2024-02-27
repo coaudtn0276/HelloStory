@@ -225,7 +225,7 @@ export const postCommentApi = async ({ commentValue, itemId, grandParentId }: Co
     }
     // console.log({ commentValue, itmeId: itemId });
 
-    const response = await fetch("/api/comment/new", { method: "POST", body: JSON.stringify({ commentValue, itmeId: itemId, grandParentId: grandParentId }) });
+    const response = await fetch("/api/comment/new", { method: "POST", body: JSON.stringify({ commentValue, itemId: itemId, grandParentId: grandParentId }) });
     const resJson = await response.json();
     const resStatus = await response.status;
 
@@ -247,9 +247,11 @@ export const getCommentApi = async (itemId: string) => {
   }
 };
 
-export const commentDeleteApi = async (itemId: string, commentPw: string) => {
+export const commentDeleteApi = async (itemId: string, commentPw: string, postId: string) => {
   try {
-    const response = await fetch("/api/comment/delete", { method: "DELETE", body: JSON.stringify({ itemId: itemId, commentPw: commentPw }) });
+    const response = await fetch("/api/comment/delete", { method: "DELETE", body: JSON.stringify({ itemId: itemId, commentPw: commentPw, postId: postId }) });
+
+    console.log(response);
 
     const resJson = await response.json();
     const resStatus = await response.status;

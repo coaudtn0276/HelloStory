@@ -111,7 +111,7 @@ const CarouselItemsSlick: React.FC<MyPageListProps> = ({ data }) => {
         {data.map((el) => {
           return (
             <Link key={el._id} href={`/detail/${el._id}`} className="w-28 h-28 ">
-              <img src={`https://hellostory.s3.ap-northeast-2.amazonaws.com/${el.imgUrl}`} className="w-full h-full object-cover" />
+              <img src={`https://hellostory.s3.ap-northeast-2.amazonaws.com/${el.imgUrl}`} className="w-full h-full object-contain" />
             </Link>
           );
         })}

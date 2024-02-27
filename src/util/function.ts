@@ -43,3 +43,9 @@ export const changeDate = (value: string) => {
 
   return formattedDate;
 };
+
+export const htmlToText = (html: string) => {
+  const tempEl = document.createElement("div");
+  tempEl.innerHTML = html;
+  return tempEl.textContent || tempEl.innerText || "";
+};

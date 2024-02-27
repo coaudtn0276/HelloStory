@@ -32,6 +32,7 @@ export type DataType = {
   imgUrl: string;
   modificationDate: string;
   views: number;
+  commentNum?: number;
 };
 
 export type PostDocument = DataType & {
@@ -161,4 +162,11 @@ export type ChildCommentListType = {
   grandParentId: string;
   parentId: string;
   selectModalId: string;
+};
+
+export type SearchPageProps = {
+  params: {
+    searchValue: string;
+  };
+  searchParams: string;
 };

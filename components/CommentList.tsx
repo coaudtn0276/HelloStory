@@ -20,7 +20,6 @@ const CommentList: React.FC<CommentListType> = ({ itemId }) => {
   const [deleteCommentPw, setDeleteCommentPw] = useState("");
 
   const session = useSession();
-  // console.log(session);
 
   const handlePostComment = async () => {
     const response = await postCommentApi({ commentValue, itemId });
@@ -30,11 +29,15 @@ const CommentList: React.FC<CommentListType> = ({ itemId }) => {
     }
   };
 
-  const handleCommentDelete = async (itemId: string, commnetPw: string) => {
-    const response = await commentDeleteApi(itemId, commnetPw);
+  const handleCommentDelete = async (itemId: string, commnetPw: string, postId: string) => {
+    const response = await commentDeleteApi(itemId, commnetPw, postId);
     console.log(response);
     if (response?.resStatus === 403) {
       return alert("비밀번호가 틀립니다.");
+    }
+    if (response?.resStatus !== 200) {
+      console.log(response?.resStatus, response?.resJson);
+      return alert("잠시후 다시 시도 바랍니다.");
     }
     setSelectId("");
     setDeleteCommentPw("");
@@ -135,7 +138,7 @@ const CommentList: React.FC<CommentListType> = ({ itemId }) => {
                             className="text-ellipsis break-words flex justify-center items-center text-white font-b"
                             onClick={() => {
                               if (deleteCommentPw) {
-                                handleCommentDelete(el._id, deleteCommentPw);
+                                handleCommentDelete(el._id, deleteCommentPw, itemId);
                               }
                             }}
                           >
@@ -167,10 +170,11 @@ const CommentList: React.FC<CommentListType> = ({ itemId }) => {
             type="text"
             className="border-[1px] w-full pl-2 py-1 mb-2"
             placeholder="닉네임"
-            value={session ? session.data?.user?.name || "" : commentValue.author}
+            value={commentValue.author}
             onChange={(e) => {
               setCommentValue((prevCommentValue) => ({ ...prevCommentValue, author: e.target.value }));
             }}
+            readOnly={session.data === null ? false : true}
           />
           <input
             type="password"

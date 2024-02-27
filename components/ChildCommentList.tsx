@@ -27,10 +27,14 @@ const ChildCommentList = ({ childData, grandParentId, parentId, selectModalId }:
   };
 
   const handleCommentDelete = async (itemId: string, commnetPw: string) => {
-    const response = await commentDeleteApi(itemId, commnetPw);
+    const response = await commentDeleteApi(itemId, commnetPw, grandParentId);
     console.log(response);
     if (response?.resStatus === 403) {
       return alert("비밀번호가 틀립니다.");
+    }
+    if (response?.resStatus !== 200) {
+      console.log(response?.resStatus, response?.resJson);
+      return alert("잠시후 다시 시도 바랍니다.");
     }
     setSelectId("");
     setDeleteCommentPw("");

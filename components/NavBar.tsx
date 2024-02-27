@@ -8,13 +8,27 @@ import { postImg, searchImg } from "@/public/image";
 import { useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { NavBarType } from "@/src/type/types";
+import { useRouter } from "next/navigation";
 
 const NavBar: React.FC<NavBarType> = () => {
   const [activeLink, setActiveLink] = useState("");
+  const [searchValue, setSearchValue] = useState("");
+
   const session = useSession();
+  const router = useRouter();
 
   const handleActiveClick = (path: string) => {
     setActiveLink(path);
+  };
+
+  const handleSearch = () => {
+    if (searchValue === "") {
+      return alert("검색어를 입력해주세요.");
+    }
+    const encodedSearchValue = encodeURIComponent(searchValue);
+
+    router.push(`/search/${encodedSearchValue}`);
+    setSearchValue("");
   };
 
   return (
@@ -125,12 +139,20 @@ const NavBar: React.FC<NavBarType> = () => {
           </Link>
         </div>
 
-        <form action="submit" className="flex justify-between items-center w-7/12 h-8 px-2 border-2 border-gray-primary rounded-md">
-          <input type="text" className="font-b w-full outline-none text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs placeholder-[#d6d6d6] " placeholder="궁금한 이야기를 검색해보세요." />
-          <button type="submit">
+        <div className="flex justify-between items-center w-7/12 h-8 px-2 border-2 border-gray-primary rounded-md">
+          <input
+            type="text"
+            className="font-b w-full outline-none text-[6px] sm:text-[8px] md:text-[10px] lg:text-xs placeholder-[#d6d6d6] "
+            placeholder="궁금한 이야기를 검색해보세요."
+            value={searchValue}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+            }}
+          />
+          <button onClick={handleSearch}>
             <Image src={searchImg} alt="searchImg" className="w-3 sm:w-4 md:w-5 lg:w-4 h-3 sm:h-4 md:h-5" />
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );

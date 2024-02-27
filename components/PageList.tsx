@@ -5,24 +5,53 @@ import { PageListProps } from "@/src/type/types";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Dropdown, Pagination } from ".";
-import { changeDate, switchPostCategory } from "@/src/util/function";
+import { changeDate, htmlToText } from "@/src/util/function";
 import Link from "next/link";
 
 const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
-  // console.log(data);
   // 전체 data중에서 최신 등록 순으로 정렬
   const [inputValue, setInputValue] = useState("");
   const [dataToUse, setDataUse] = useState(data);
   const [riseFallValue, setRiseFallValue] = useState(false);
-  const [dropDownValue, setDropDownValue] = useState("");
+  const [dropDownValue, setDropDownValue] = useState("제목 + 내용");
+  const [searchValue, setSearchValue] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 15;
   const offset = (currentPage - 1) * postsPerPage;
 
+  const handleSearch = () => {
+    if (inputValue === "") {
+      return alert("검색어를 입력하세요.");
+    }
+    setSearchValue(inputValue);
+    setInputValue("");
+  };
+
   const handleClickRiseFall = () => {
     setRiseFallValue(!riseFallValue);
   };
+
+  useEffect(() => {
+    const filteredData = [...data].filter((el) => {
+      const contentText = htmlToText(el.content); // HTML을 텍스트로 변환
+
+      switch (dropDownValue) {
+        case "제목 + 내용":
+          return el.title.includes(searchValue) || contentText.includes(searchValue);
+        case "제목":
+          return el.title.includes(searchValue);
+        case "내용":
+          return contentText.includes(searchValue);
+        case "글쓴이":
+          return el.author.includes(searchValue);
+      }
+    });
+
+    // console.log(filteredData);
+
+    setDataUse(filteredData);
+  }, [data, dropDownValue, searchValue]);
 
   useEffect(() => {
     if (riseFallValue) {
@@ -33,49 +62,54 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
     }
   }, [riseFallValue, data]);
 
-  const totalPosts = dataToUse.slice(offset, offset + postsPerPage).map((el, idx) => {
-    const changeModiDate = changeDate(el.modificationDate);
-    const stringItmeId = el._id.toString();
-    const switchCategory = switchPostCategory(containerTitle);
+  const totalPosts =
+    dataToUse.length > 0 ? (
+      dataToUse.slice(offset, offset + postsPerPage).map((el, idx) => {
+        const changeModiDate = changeDate(el.modificationDate);
+        const stringItmeId = el._id.toString();
 
-    return (
-      // /detail/[itmeId]를 만들고 내부의 {...}stroy부분은 useEffect로 가져온 데이터의 category를 받아서 변경
-      <Link href={`/detail/${stringItmeId}`} key={stringItmeId} className="flex justify-between py-[2px] font-l text-center border-b-[1px] border-b-[#bdbdbd]">
-        <p style={{ flex: 1 }}>{idx + 1}</p>
-        <div style={{ flex: 4 }} className="flex items-center text-left mr-4">
-          <div
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              wordWrap: "break-word",
-              display: "-webkit-box",
-              WebkitLineClamp: "1",
-              WebkitBoxOrient: "vertical",
-            }}
-          >
-            {el.title}
-          </div>
-          {el.imgUrl !== "" && <Image src={photoIcon} alt="사진 아이콘" className="ml-2 w-2 sm:w-2 md:w-3 lg:w-4" />}
-        </div>
-        <p style={{ flex: 1 }}>{changeModiDate}</p>
-        <div style={{ flex: 1 }}>
-          <div
-            style={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              wordWrap: "break-word",
-              display: "-webkit-box",
-              WebkitLineClamp: "1",
-              WebkitBoxOrient: "vertical",
-            }}
-          >
-            {el.author}
-          </div>
-        </div>
-        <p style={{ flex: 1 }}>{el.views}</p>
-      </Link>
+        return (
+          // /detail/[itmeId]를 만들고 내부의 {...}stroy부분은 useEffect로 가져온 데이터의 category를 받아서 변경
+          <Link href={`/detail/${stringItmeId}`} key={stringItmeId} className="flex justify-between py-[2px] font-l text-center border-b-[1px] border-b-[#bdbdbd]">
+            <p style={{ flex: 1 }}>{idx + 1}</p>
+            <div style={{ flex: 4 }} className="flex items-center text-left mr-4">
+              <div
+                style={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  wordWrap: "break-word",
+                  display: "-webkit-box",
+                  WebkitLineClamp: "1",
+                  WebkitBoxOrient: "vertical",
+                }}
+              >
+                {el.title}
+              </div>
+              {el.imgUrl !== "" && <Image src={photoIcon} alt="사진 아이콘" className="ml-2 w-2 sm:w-2 md:w-3 lg:w-4 mr-4" />}
+              {el.commentNum && <span className="text-red font-b">(+{el.commentNum})</span>}
+            </div>
+            <p style={{ flex: 1 }}>{changeModiDate}</p>
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  wordWrap: "break-word",
+                  display: "-webkit-box",
+                  WebkitLineClamp: "1",
+                  WebkitBoxOrient: "vertical",
+                }}
+              >
+                {el.author}
+              </div>
+            </div>
+            <p style={{ flex: 1 }}>{el.views}</p>
+          </Link>
+        );
+      })
+    ) : (
+      <div className="text-center">검색 결과가 없습니다.</div>
     );
-  });
 
   const setPage = (page: number) => {
     setCurrentPage(page);
@@ -126,7 +160,7 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
                 setInputValue(e.target.value);
               }}
             />
-            <button type="submit">
+            <button type="submit" onClick={handleSearch}>
               <Image src={searchImg} alt="searchImg" className="w-3 sm:w-4 md:w-5 lg:w-4 h-3 sm:h-4 md:h-5" />
             </button>
           </div>
