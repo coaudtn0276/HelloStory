@@ -31,12 +31,12 @@ const CommentList: React.FC<CommentListType> = ({ itemId }) => {
 
   const handleCommentDelete = async (itemId: string, commnetPw: string, postId: string) => {
     const response = await commentDeleteApi(itemId, commnetPw, postId);
-    console.log(response);
+    // console.log(response);
     if (response?.resStatus === 403) {
       return alert("비밀번호가 틀립니다.");
     }
     if (response?.resStatus !== 200) {
-      console.log(response?.resStatus, response?.resJson);
+      // console.log(response?.resStatus, response?.resJson);
       return alert("잠시후 다시 시도 바랍니다.");
     }
     setSelectId("");

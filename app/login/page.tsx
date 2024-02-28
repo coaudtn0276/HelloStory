@@ -2,18 +2,15 @@
 
 import { Button } from "@/components";
 import { githubIcon, kakaoIcon, naverIcon } from "@/public/image";
-import { getProviders, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Login = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
-  const [providers, setProviders] = useState(null);
-  console.log(providers);
-
-  const router = useRouter();
+  // const [providers, setProviders] = useState(null);
+  // console.log(providers);
 
   const handleLogin = async () => {
     const result = await signIn("credentials", {
@@ -26,7 +23,7 @@ const Login = () => {
     if (result?.status !== 200) {
       return alert("메일 혹은 패스워드를 확인 바랍니다.");
     }
-    return router.push("/");
+    window.location.href = "/";
   };
 
   const handleAuthLogin = async (value: string) => {
@@ -34,15 +31,19 @@ const Login = () => {
       redirect: true,
       callbackUrl: "/",
     });
+
+    // if (result === undefined) {
+    // return alert("잠시후 다시 시도 바랍니다.");
+    // }
   };
 
-  useEffect(() => {
-    (async () => {
-      const res: any = await getProviders();
-      console.log(res);
-      setProviders(res);
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     const res: any = await getProviders();
+  //     console.log(res);
+  //     setProviders(res);
+  //   })();
+  // }, []);
 
   return (
     <div className="flex justify-center mt-40">

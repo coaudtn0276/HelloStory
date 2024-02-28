@@ -11,7 +11,7 @@ const handler = async (...[req, res]: ServerPropsType) => {
       const result = await db.collection("post").findOne({ _id: new ObjectId(itemId?.toString()) });
       await db.collection("post").updateOne({ _id: new ObjectId(itemId?.toString()) }, { $inc: { views: 1 } });
 
-      console.log(result);
+      // console.log(result);
 
       return res.status(200).json(JSON.stringify(result));
     } catch (error) {

@@ -25,8 +25,8 @@ const Write = () => {
 
   const [dropDownValue, setDropDownValue] = useState("게임");
   const [postData, setPostData] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
-  console.log(postData);
   //에디터에 작성된 데이터
+  // console.log(postData);
 
   const dropDownList = ["게임", "맛집", "반려동물", "잡담"];
 

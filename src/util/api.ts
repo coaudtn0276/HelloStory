@@ -22,7 +22,7 @@ export const postApi = async ({ postData, updateFile, dropDownValue, router }: P
     if (updateFile) {
       // Presigned URL 받아오기
       const presignedUrl = await getS3PresignedURL(updateFile);
-      console.log(presignedUrl);
+      // console.log(presignedUrl);
 
       // S3 업로드
       let s3UpladRes = await fetch(presignedUrl.url, {
@@ -30,7 +30,7 @@ export const postApi = async ({ postData, updateFile, dropDownValue, router }: P
         body: updateFile,
         headers: { "Content-Type": updateFile.type },
       });
-      console.log(s3UpladRes);
+      // console.log(s3UpladRes);
 
       if (s3UpladRes.ok) {
         const s3FileUrl = `https://hellostory.s3.ap-northeast-2.amazonaws.com/${presignedUrl.fileName}`;

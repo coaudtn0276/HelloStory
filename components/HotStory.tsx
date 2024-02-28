@@ -37,7 +37,7 @@ const HotStory: React.FC<HotStoryProps> = ({ data, containerTitle }) => {
             {el.title}
           </div>
           {el.imgUrl !== "" && <Image src={photoIcon} alt="사진 아이콘" className="ml-2 w-2 sm:w-2 md:w-3 lg:w-4 mr-4" />}
-          {el.commentNum && <span className="text-red font-b">(+{el.commentNum})</span>}
+          {el.commentNum && el.commentNum > 0 ? <span className="text-red font-b">(+{el.commentNum})</span> : null}
         </div>
         <p style={{ flex: 1 }}>{changeModiDate}</p>
         <div style={{ flex: 1 }}>

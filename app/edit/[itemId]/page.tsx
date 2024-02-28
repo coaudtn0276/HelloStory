@@ -22,7 +22,7 @@ const ReactQuill = dynamic(
 const Edit: React.FC<itemIdProps> = ({ params }) => {
   // console.log(params);
   const [updateFile, setUpdateFile] = useState<File | null>();
-  console.log(updateFile);
+  // console.log(updateFile);
   const [updateFileName, setUpdateFileName] = useState("");
 
   const [dropDownValue, setDropDownValue] = useState("게임");
@@ -30,7 +30,7 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
   const [originalPostData, setOriginalPostData] = useState<DataType>();
 
   //에디터에 작성된 데이터
-  console.log(postData);
+  // console.log(postData);
 
   const dropDownList = ["게임", "맛집", "반려동물", "잡담"];
 

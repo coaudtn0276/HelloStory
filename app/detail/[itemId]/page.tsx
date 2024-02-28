@@ -11,7 +11,7 @@ import Image from "next/image";
 import { Button, CommentList, DeleteModal, DeleteSuccessModal } from "@/components";
 import { photoIcon } from "@/public/image";
 
-import { DataType, PostDocument, itemIdProps } from "@/src/type/types";
+import { PostDocument, itemIdProps } from "@/src/type/types";
 import { changeDate, switchCategory } from "@/src/util/function";
 import { deleteApi } from "@/src/util/api";
 import { useSession } from "next-auth/react";
@@ -102,7 +102,7 @@ const Detail: React.FC<itemIdProps> = ({ params }) => {
             <div className="flex items-center font-l mr-4">
               <div>{getData?.title}</div>
               {getData?.imgUrl !== "" && <Image src={photoIcon} alt="사진 아이콘" className="ml-2 w-2 sm:w-2 md:w-4 lg:w-5 mr-4" />}
-              {getData?.commentNum && <span className="text-red font-b">(+{getData.commentNum})</span>}
+              {getData && getData.commentNum && getData.commentNum > 0 ? <span className="text-red font-b">(+{getData.commentNum})</span> : null}
             </div>
           </div>
           <div className="flex">

@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Hello Stroy",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const db = (await connectDB).db("hellostory");
   // data props로 내려줄때 각 컴포넌트에 맞는 데이터 filter해서 내려주기

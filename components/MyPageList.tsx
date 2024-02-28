@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { deleteApi } from "@/src/util/api";
 
 const MyPageList: React.FC<MyPageListProps> = ({ data }) => {
-  console.log(data);
+  // console.log(data);
   // 전체 data중에서 최신 등록 순으로 정렬
   const [inputValue, setInputValue] = useState("");
   const [dataToUse, setDataUse] = useState(data);
