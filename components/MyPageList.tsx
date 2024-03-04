@@ -66,7 +66,7 @@ const MyPageList: React.FC<MyPageListProps> = ({ data }) => {
     const stringItmeId = el._id.toString();
 
     return (
-      // /detail/[itmeId]를 만들고 내부의 {...}stroy부분은 useEffect로 가져온 데이터의 category를 받아서 변경
+      // /detail/[itmeId]를 만들고 내부의 {...}story부분은 useEffect로 가져온 데이터의 category를 받아서 변경
       <Link href={`/detail/${stringItmeId}`} key={stringItmeId} className="flex justify-between py-[2px] font-l text-center border-b-[1px] border-b-[#bdbdbd]">
         <p style={{ flex: 1 }} className="flex items-center justify-center">
           {idx + 1}

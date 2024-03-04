@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import { Dropdown, Pagination } from ".";
 import { changeDate, htmlToText } from "@/src/util/function";
 import Link from "next/link";
+import { useSetRecoilState } from "recoil";
+import { NavParamsAtom } from "@/recoil/NavParamsAtom";
+import { useParams, usePathname } from "next/navigation";
 
 const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
   // 전체 data중에서 최신 등록 순으로 정렬
@@ -19,6 +22,16 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 15;
   const offset = (currentPage - 1) * postsPerPage;
+
+  const setActiveLink = useSetRecoilState(NavParamsAtom);
+  const pathName = usePathname();
+
+  useEffect(() => {
+    if (pathName) {
+      setActiveLink(pathName);
+    }
+    // console.log(pathName);
+  }, [setActiveLink, pathName]);
 
   const handleSearch = () => {
     if (inputValue === "") {
@@ -69,7 +82,7 @@ const PageList: React.FC<PageListProps> = ({ data, containerTitle }) => {
         const stringItmeId = el._id.toString();
 
         return (
-          // /detail/[itmeId]를 만들고 내부의 {...}stroy부분은 useEffect로 가져온 데이터의 category를 받아서 변경
+          // /detail/[itmeId]를 만들고 내부의 {...}story부분은 useEffect로 가져온 데이터의 category를 받아서 변경
           <Link href={`/detail/${stringItmeId}`} key={stringItmeId} className="flex justify-between py-[2px] font-l text-center border-b-[1px] border-b-[#bdbdbd]">
             <p style={{ flex: 1 }}>{idx + 1}</p>
             <div style={{ flex: 4 }} className="flex items-center text-left mr-4">

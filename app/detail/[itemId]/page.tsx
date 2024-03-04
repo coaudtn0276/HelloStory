@@ -98,9 +98,9 @@ const Detail: React.FC<itemIdProps> = ({ params }) => {
       <div className="flex flex-col border-t-2 border-gray-boxText mb-2">
         <div className="flex flex-wrap items-center justify-between py-1 px-4 font-b text-center">
           <div className="flex ">
-            <p className="mr-4 text-nowrap">제목</p>
+            <p className="mr-4 text-nowrap ">제목</p>
             <div className="flex items-center font-l mr-4">
-              <div>{getData?.title}</div>
+              <div className="mr-2">{getData?.title}</div>
               {getData?.imgUrl !== "" && <Image src={photoIcon} alt="사진 아이콘" className="ml-2 w-2 sm:w-2 md:w-4 lg:w-5 mr-4" />}
               {getData && getData.commentNum && getData.commentNum > 0 ? <span className="text-red font-b">(+{getData.commentNum})</span> : null}
             </div>

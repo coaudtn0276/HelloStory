@@ -5,9 +5,11 @@ import { HotStoryProps } from "@/src/type/types";
 import { changeDate, switchCategory } from "@/src/util/function";
 import { testdata } from "@/testdata";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pagination } from ".";
 import Link from "next/link";
+import { useSetRecoilState } from "recoil";
+import { NavParamsAtom } from "@/recoil/NavParamsAtom";
 
 const HotStory: React.FC<HotStoryProps> = ({ data, containerTitle }) => {
   // 전체 data중에서 조회수 높은 순으로 정렬
@@ -15,6 +17,8 @@ const HotStory: React.FC<HotStoryProps> = ({ data, containerTitle }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 5;
   const offset = (currentPage - 1) * postsPerPage;
+
+  const setActiveLink = useSetRecoilState(NavParamsAtom);
 
   const totalPosts = data.slice(offset, offset + postsPerPage).map((el, idx) => {
     const changeModiDate = changeDate(el.modificationDate);
@@ -62,6 +66,10 @@ const HotStory: React.FC<HotStoryProps> = ({ data, containerTitle }) => {
   const setPage = (page: number) => {
     setCurrentPage(page);
   };
+
+  useEffect(() => {
+    setActiveLink("/");
+  }, [setActiveLink]);
 
   return (
     <div className="flex flex-col w-full h-full text-xs sm:text-sm md:text-base lg:text-lg">

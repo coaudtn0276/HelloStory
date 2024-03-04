@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 
-import { Button, Dropdown } from "@/components";
+import { Button, Dropdown, Spinner } from "@/components";
 import { DataType } from "@/src/type/types";
 import { switchPostCategory } from "@/src/util/function";
 import { useRouter } from "next/navigation";
@@ -25,6 +25,7 @@ const Write = () => {
 
   const [dropDownValue, setDropDownValue] = useState("게임");
   const [postData, setPostData] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
+  const [isLoading, setIsLoading] = useState(false);
   //에디터에 작성된 데이터
   // console.log(postData);
 
@@ -34,14 +35,16 @@ const Write = () => {
   const quillRef = useRef<any>();
 
   const handlePostApi = async () => {
+    setIsLoading(true);
     await postApi({ postData, updateFile, dropDownValue, router });
+    setIsLoading(false);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
       const file = e.target.files[0];
-      if (file.size > 1048576) {
-        return alert("파일 크기는 1MB 이하의 파일만 업로드 가능합니다.");
+      if (file.size > 1048576 * 5) {
+        return alert("파일 크기는 5MB 이하의 파일만 업로드 가능합니다.");
       }
       // console.log("file", file);
       setUpdateFile(file);
@@ -160,6 +163,7 @@ const Write = () => {
         </span>
       </div>
       {/* <img src={updateSrc} alt="icon" /> */}
+      {isLoading && <Spinner />}
     </div>
   );
 };

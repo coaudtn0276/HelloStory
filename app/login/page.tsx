@@ -2,15 +2,19 @@
 
 import { Button } from "@/components";
 import { githubIcon, kakaoIcon, naverIcon } from "@/public/image";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const Login = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
   // const [providers, setProviders] = useState(null);
   // console.log(providers);
+
+  const session = useSession();
+  const router = useRouter();
 
   const handleLogin = async () => {
     const result = await signIn("credentials", {
@@ -37,13 +41,11 @@ const Login = () => {
     // }
   };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const res: any = await getProviders();
-  //     console.log(res);
-  //     setProviders(res);
-  //   })();
-  // }, []);
+  useEffect(() => {
+    if (session.data) {
+      router.push("/");
+    }
+  }, [session, router]);
 
   return (
     <div className="flex justify-center mt-40">

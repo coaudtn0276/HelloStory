@@ -12,3 +12,4 @@ export { default as DeleteModal } from "./DeleteModal";
 export { default as DeleteSuccessModal } from "./DeleteSuccessModal";
 export { default as CommentList } from "./CommentList";
 export { default as ChildCommentList } from "./ChildCommentList";
+export { default as Spinner } from "./Spinner";

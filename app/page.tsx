@@ -4,8 +4,8 @@ import { connectDB } from "@/src/util/database";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Hello Stroy",
-  description: "Hello Stroy",
+  title: "Hello Story",
+  description: "Hello Story",
 };
 
 export const dynamic = "force-dynamic";

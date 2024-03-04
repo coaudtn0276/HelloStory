@@ -5,21 +5,27 @@ import Button from "./Button";
 import Image from "next/image";
 import { postImg, searchImg } from "@/public/image";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { NavBarType } from "@/src/type/types";
 import { useRouter } from "next/navigation";
+import { useRecoilState } from "recoil";
+import { NavParamsAtom } from "@/recoil/NavParamsAtom";
 
 const NavBar: React.FC<NavBarType> = () => {
-  const [activeLink, setActiveLink] = useState("");
+  const [activeLink, setActiveLink] = useRecoilState(NavParamsAtom);
+  // console.log(activeLink);
   const [searchValue, setSearchValue] = useState("");
 
   const session = useSession();
   const router = useRouter();
 
-  const handleActiveClick = (path: string) => {
-    setActiveLink(path);
-  };
+  // const [test, setTest] = useRecoilState(NavParamsAtom);
+  // console.log(test);
+
+  // const handleActiveClick = (path: string) => {
+  //   setActiveLink(path);
+  // };
 
   const handleSearch = () => {
     if (searchValue === "") {
@@ -63,7 +69,7 @@ const NavBar: React.FC<NavBarType> = () => {
           href={"/"}
           className="font-nico mx-2 text-sm sm:text-base md:text-xl lg:text-2xl"
           onClick={() => {
-            handleActiveClick("/");
+            setActiveLink("/");
           }}
         >
           <p className="-mb-2">
@@ -80,7 +86,7 @@ const NavBar: React.FC<NavBarType> = () => {
             href={"/"}
             className={`${activeLink === "/" && "text-orange"}`}
             onClick={() => {
-              handleActiveClick("/");
+              setActiveLink("/");
             }}
           >
             홈
@@ -89,7 +95,7 @@ const NavBar: React.FC<NavBarType> = () => {
             href={"/game"}
             className={`${activeLink === "/game" && "text-orange"}`}
             onClick={() => {
-              handleActiveClick("/game");
+              setActiveLink("/game");
             }}
           >
             게임
@@ -98,7 +104,7 @@ const NavBar: React.FC<NavBarType> = () => {
             href={"/restaurant"}
             className={`${activeLink === "/restaurant" && "text-orange"}`}
             onClick={() => {
-              handleActiveClick("/restaurant");
+              setActiveLink("/restaurant");
             }}
           >
             맛집
@@ -107,7 +113,7 @@ const NavBar: React.FC<NavBarType> = () => {
             href={"/pet"}
             className={`${activeLink === "/pet" && "text-orange"}`}
             onClick={() => {
-              handleActiveClick("/pet");
+              setActiveLink("/pet");
             }}
           >
             반려동물
@@ -116,7 +122,7 @@ const NavBar: React.FC<NavBarType> = () => {
             href={"/chat"}
             className={`${activeLink === "/chat" && "text-orange"}`}
             onClick={() => {
-              handleActiveClick("/chat");
+              setActiveLink("/chat");
             }}
           >
             잡담

@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 
-import { Button, Dropdown } from "@/components";
+import { Button, DeleteModal, Dropdown, Spinner } from "@/components";
 import { DataType, itemIdProps } from "@/src/type/types";
 import { findImgTag, switchCategory, switchPostCategory } from "@/src/util/function";
 import { useRouter } from "next/navigation";
@@ -28,6 +28,7 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
   const [dropDownValue, setDropDownValue] = useState("게임");
   const [postData, setPostData] = useState<DataType>({ title: "", content: "", category: "", author: "", imgUrl: "", modificationDate: "", views: 0 });
   const [originalPostData, setOriginalPostData] = useState<DataType>();
+  const [isLoading, setIsLoading] = useState(false);
 
   //에디터에 작성된 데이터
   // console.log(postData);
@@ -39,15 +40,17 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
 
   const handlePutApi = async () => {
     if (originalPostData) {
+      setIsLoading(true);
       await putApi({ originalPostData, postData, updateFile, setUpdateFileName, dropDownValue, router });
+      setIsLoading(false);
     }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files !== null) {
       const file = e.target.files[0];
-      if (file.size > 1048576) {
-        return alert("파일 크기는 1MB 이하의 파일만 업로드 가능합니다.");
+      if (file.size > 1048576 * 5) {
+        return alert("파일 크기는 5MB 이하의 파일만 업로드 가능합니다.");
       }
       // console.log("file", file);
       setUpdateFile(file);
@@ -201,6 +204,7 @@ const Edit: React.FC<itemIdProps> = ({ params }) => {
         </span>
       </div>
       {/* <img src={updateSrc} alt="icon" /> */}
+      {isLoading && <Spinner />}
     </div>
   );
 };
