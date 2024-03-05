@@ -70,10 +70,11 @@ const ChildCommentList = ({ childData, grandParentId, parentId, selectModalId }:
                   type="text"
                   className="border-[1px] w-full pl-2 py-1 mb-2"
                   placeholder="닉네임"
-                  value={session ? session.data?.user?.name || "" : commentValue.author}
+                  value={commentValue.author}
                   onChange={(e) => {
                     setCommentValue((prevCommentValue) => ({ ...prevCommentValue, author: e.target.value }));
                   }}
+                  readOnly={session.data === null ? false : true}
                 />
                 <input
                   type="password"
